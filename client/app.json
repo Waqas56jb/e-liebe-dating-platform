@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "E-Liebe",
+    "slug": "e-liebe",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "scheme": "eliebe",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#1A1018",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.eliebe.app"
+    },
+    "android": {
+      "package": "com.eliebe.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/logo.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/logo.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "E-Liebe needs access to your photos so you can add them to your profile."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/logo.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#FFFFFF",
+          "imageWidth": 220
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c6660df4-e16e-4294-b66f-0770a5617eaf"
+      }
+    },
+    "owner": "waqas5656jb"
+  }
+}
