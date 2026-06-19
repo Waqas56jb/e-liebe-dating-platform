@@ -18,6 +18,22 @@ export const MATCHES_STRINGS = {
   emptySub: { de: 'Swipe weiter, um deine Person zu finden.', en: 'Keep swiping to find your person.' },
 };
 
+export const PREMIUM_STRINGS = {
+  title: { de: 'E‑Liebe Premium', en: 'E‑Liebe Premium' },
+  subtitle: { de: 'Mehr Möglichkeiten.\nMehr echte Verbindungen.', en: 'More possibilities.\nMore real connections.' },
+  features: [
+    { icon: 'heart', title: { de: 'Wer hat mich geliked', en: 'Who liked me' }, sub: { de: 'Sieh, wem du gefällst', en: 'See who likes you' } },
+    { icon: 'infinite', title: { de: 'Unbegrenzte Likes', en: 'Unlimited likes' }, sub: { de: 'Like ohne Limit', en: 'Like without limits' } },
+    { icon: 'options', title: { de: 'Erweiterte Filter', en: 'Advanced filters' }, sub: { de: 'Finde, was wirklich zu dir passt', en: 'Find exactly who fits you' } },
+    { icon: 'rocket', title: { de: 'Profil Boost', en: 'Profile Boost' }, sub: { de: 'Mehr Sichtbarkeit für dich', en: 'More visibility for you' } },
+    { icon: 'airplane', title: { de: 'Reisemodus', en: 'Travel mode' }, sub: { de: 'Lerne Singles weltweit kennen', en: 'Meet singles worldwide' } },
+    { icon: 'eye-off', title: { de: 'Unsichtbarer Modus', en: 'Incognito mode' }, sub: { de: 'Gehe auf Entdeckungstour privat', en: 'Browse privately' } },
+  ],
+  monthly: { de: 'pro Monat', en: 'per month' },
+  subscribe: { de: 'Premium abonnieren', en: 'Subscribe to Premium' },
+  restore: { de: 'Kauf wiederherstellen', en: 'Restore purchase' },
+};
+
 export const PROFILE_STRINGS = {
   title: { de: 'Mein Profil', en: 'My profile' },
   complete: { de: 'Profil vervollständigt', en: 'Profile complete' },

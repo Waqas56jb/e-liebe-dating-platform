@@ -19,6 +19,7 @@ export default function MyProfileScreen({
   onPrivateMode,
   onPrivacy,
   onSettings,
+  onPremium,
 }) {
   const t = makeT(language);
   const name = profile?.name || currentUser.name;
@@ -31,7 +32,7 @@ export default function MyProfileScreen({
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: spacing.xxl }}>
           {/* Hero */}
@@ -75,8 +76,8 @@ export default function MyProfileScreen({
           </View>
 
           {/* Premium */}
-          <Pressable style={styles.premium}>
-            <LinearGradient colors={['#E9C46A', '#FF8A5B']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.premiumGrad}>
+          <Pressable style={styles.premium} onPress={onPremium}>
+            <LinearGradient colors={['#D4AF37', '#B8860B']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.premiumGrad}>
               <Ionicons name="diamond" size={24} color={colors.white} />
               <View style={{ flex: 1, marginLeft: spacing.md }}>
                 <Text style={styles.premiumTitle}>{pick(P.premium, language)}</Text>

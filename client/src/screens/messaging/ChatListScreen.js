@@ -16,7 +16,7 @@ export default function ChatListScreen({ language = 'de', onOpenChat, onOpenNoti
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>

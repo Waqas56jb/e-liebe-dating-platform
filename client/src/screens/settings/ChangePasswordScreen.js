@@ -31,7 +31,7 @@ export default function ChangePasswordScreen({ language = 'de', onBack, onSaved 
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScreenHeader title={pick(S.changePassword, language)} onBack={onBack} />
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

@@ -56,7 +56,7 @@ export const MESSAGES_BY_CONVO = {
     { id: 'm1', mine: false, type: 'text', text: { de: 'Hey! Wie war deine Wanderung? 🏔️', en: 'Hey! How was your hike? 🏔️' }, time: '09:24', status: 'read' },
     { id: 'm2', mine: true, type: 'text', text: { de: 'Es war fantastisch! Sonnenaufgang am Gipfel 🌅', en: 'It was amazing! Sunrise at the summit 🌅' }, time: '09:26', status: 'read' },
     { id: 'm3', mine: false, type: 'text', text: { de: 'Wow, hast du Fotos gemacht?', en: 'Wow, did you take photos?' }, time: '09:27', status: 'read' },
-    { id: 'm4', mine: true, type: 'image', uri: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80', time: '09:28', status: 'read' },
+    { id: 'm4', mine: true, type: 'image', uri: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1400&q=90&fit=crop', time: '09:28', status: 'read' },
     { id: 'm5', mine: false, type: 'text', text: { de: 'Atemberaubend! 😍', en: 'Breathtaking! 😍' }, time: '09:30', status: 'read' },
     { id: 'm6', mine: true, type: 'text', text: { de: 'Zeig ich dir alle bei einem Kaffee? ☕️', en: 'Show you all of them over coffee? ☕️' }, time: '09:31', status: 'delivered' },
   ],

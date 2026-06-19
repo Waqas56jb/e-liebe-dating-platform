@@ -19,7 +19,7 @@ export default function LanguageCard({ item, selected, onPress, scale }) {
         <LinearGradient
           colors={
             selected
-              ? ['rgba(232,83,122,0.35)', 'rgba(123,45,94,0.30)']
+              ? ['rgba(168,85,247,0.35)', 'rgba(123,45,94,0.30)']
               : ['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.06)']
           }
           start={{ x: 0, y: 0 }}

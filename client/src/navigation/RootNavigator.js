@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import OnboardingScreen from '../screens/onboarding/OnboardingScreen';
+import SplashScreen from '../screens/SplashScreen';
 import LanguageSelectionScreen from '../screens/onboarding/LanguageSelectionScreen';
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
-import RegistrationScreen from '../screens/auth/RegistrationScreen';
 import EmailSignupScreen from '../screens/auth/EmailSignupScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
@@ -16,10 +15,9 @@ import { colors } from '../theme';
 // Top-level flow router. Once the user reaches HOME, MainShell owns the
 // 4-tab experience (Discover · Matches · Chat · Profile) and all sub-screens.
 const ROUTES = {
-  ONBOARDING: 'onboarding',
+  SPLASH: 'splash',
   LANGUAGE: 'language',
   WELCOME: 'welcome',
-  REGISTER: 'register',
   EMAIL_SIGNUP: 'emailSignup',
   LOGIN: 'login',
   RESET: 'reset',
@@ -28,7 +26,7 @@ const ROUTES = {
 };
 
 export default function RootNavigator() {
-  const [route, setRoute] = useState(ROUTES.ONBOARDING);
+  const [route, setRoute] = useState(ROUTES.SPLASH);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
   const [profile, setProfile] = useState(null);
   const [pendingCreds, setPendingCreds] = useState(null);
@@ -44,11 +42,12 @@ export default function RootNavigator() {
 
   return (
     <View style={styles.root}>
-      {route === ROUTES.ONBOARDING && <OnboardingScreen onDone={() => go(ROUTES.LANGUAGE)} />}
+      {route === ROUTES.SPLASH && (
+        <SplashScreen language={language} onDone={() => go(ROUTES.LANGUAGE)} />
+      )}
 
       {route === ROUTES.LANGUAGE && (
         <LanguageSelectionScreen
-          onBack={() => go(ROUTES.ONBOARDING)}
           onContinue={(code) => {
             setLanguage(code);
             go(ROUTES.WELCOME);
@@ -60,26 +59,15 @@ export default function RootNavigator() {
         <WelcomeScreen
           language={language}
           onBack={() => go(ROUTES.LANGUAGE)}
-          onCreateAccount={() => go(ROUTES.REGISTER)}
+          onCreateAccount={() => go(ROUTES.EMAIL_SIGNUP)}
           onLogin={() => go(ROUTES.LOGIN)}
-        />
-      )}
-
-      {route === ROUTES.REGISTER && (
-        <RegistrationScreen
-          language={language}
-          onBack={() => go(ROUTES.WELCOME)}
-          onLogin={() => go(ROUTES.LOGIN)}
-          onEmail={() => go(ROUTES.EMAIL_SIGNUP)}
-          onGoogle={() => { setPendingCreds(null); go(ROUTES.PROFILE_SETUP); }}
-          onApple={() => { setPendingCreds(null); go(ROUTES.PROFILE_SETUP); }}
         />
       )}
 
       {route === ROUTES.EMAIL_SIGNUP && (
         <EmailSignupScreen
           language={language}
-          onBack={() => go(ROUTES.REGISTER)}
+          onBack={() => go(ROUTES.WELCOME)}
           onLogin={() => go(ROUTES.LOGIN)}
           onContinue={(creds) => {
             setPendingCreds(creds);
@@ -92,14 +80,12 @@ export default function RootNavigator() {
         <LoginScreen
           language={language}
           onBack={() => go(ROUTES.WELCOME)}
-          onRegister={() => go(ROUTES.REGISTER)}
+          onRegister={() => go(ROUTES.EMAIL_SIGNUP)}
           onSignIn={(account) => {
             setSessionEmail(account?.email || '');
             setProfile(account?.profile || null);
             go(ROUTES.HOME);
           }}
-          onGoogle={() => go(ROUTES.HOME)}
-          onApple={() => go(ROUTES.HOME)}
           onForgot={() => go(ROUTES.RESET)}
         />
       )}
@@ -111,7 +97,7 @@ export default function RootNavigator() {
       {route === ROUTES.PROFILE_SETUP && (
         <ProfileSetupScreen
           language={language}
-          onExit={() => go(pendingCreds ? ROUTES.EMAIL_SIGNUP : ROUTES.REGISTER)}
+          onExit={() => go(pendingCreds ? ROUTES.EMAIL_SIGNUP : ROUTES.WELCOME)}
           onComplete={async (data) => {
             setProfile(data);
             if (pendingCreds) {

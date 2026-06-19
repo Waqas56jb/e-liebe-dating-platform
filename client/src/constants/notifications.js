@@ -35,9 +35,9 @@ export const NOTIFICATIONS = [
 ];
 
 export const NOTIF_META = {
-  match: { icon: 'heart', color: '#FF4F6D' },
+  match: { icon: 'heart', color: '#FF6FAE' },
   message: { icon: 'chatbubble', color: '#3FA7FF' },
   like: { icon: 'thumbs-up', color: '#3DDC97' },
-  view: { icon: 'eye', color: '#E9C46A' },
+  view: { icon: 'eye', color: '#D4AF37' },
   system: { icon: 'shield-checkmark', color: '#9B5DE5' },
 };

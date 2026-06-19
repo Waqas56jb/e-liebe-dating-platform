@@ -11,7 +11,7 @@ import { useResponsive } from '../../hooks/useResponsive';
 import { colors, gradients, spacing, typography } from '../../theme';
 
 const BG_IMAGE =
-  'https://images.unsplash.com/photo-1499887142886-791eca5918cd?w=1080&q=80&auto=format&fit=crop';
+  'https://images.unsplash.com/photo-1499887142886-791eca5918cd?w=2000&q=90&fit=crop&auto=format&fit=crop';
 
 export default function RegistrationScreen({
   language = 'de',

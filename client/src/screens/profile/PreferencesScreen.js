@@ -30,7 +30,7 @@ export default function PreferencesScreen({ language = 'de', filters = DEFAULT_F
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScreenHeader title={pick(PR.title, language)} onBack={onBack} />
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>

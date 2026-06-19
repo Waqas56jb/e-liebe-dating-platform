@@ -12,7 +12,7 @@ import { useResponsive } from '../../hooks/useResponsive';
 import { colors, gradients, spacing, typography } from '../../theme';
 
 const BG_IMAGE =
-  'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=1080&q=80&auto=format&fit=crop';
+  'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=2000&q=90&fit=crop&auto=format&fit=crop';
 
 export default function LanguageSelectionScreen({ onContinue, onBack }) {
   const { scale } = useResponsive();
@@ -50,7 +50,7 @@ export default function LanguageSelectionScreen({ onContinue, onBack }) {
           ) : (
             <View style={styles.spacer} />
           )}
-          <Logo size={40} chip />
+          <Logo size={60} chip />
           <View style={styles.spacer} />
         </View>
 

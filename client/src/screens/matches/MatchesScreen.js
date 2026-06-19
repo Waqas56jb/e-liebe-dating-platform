@@ -19,7 +19,7 @@ export default function MatchesScreen({ language = 'de', onOpenChat, onOpenNotif
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>{pick(MS.title, language)}</Text>
@@ -41,7 +41,7 @@ export default function MatchesScreen({ language = 'de', onOpenChat, onOpenNotif
             contentContainerStyle={styles.list}
             ListHeaderComponent={
               <Pressable style={styles.likesCard}>
-                <LinearGradient colors={['#9B5DE5', '#FF4F6D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.likesGrad}>
+                <LinearGradient colors={['#9B5DE5', '#FF6FAE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.likesGrad}>
                   <View style={styles.likesIcon}>
                     <Ionicons name="heart" size={26} color={colors.white} />
                     <View style={styles.likesBadge}>

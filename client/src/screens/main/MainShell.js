@@ -16,6 +16,7 @@ import PreferencesScreen from '../profile/PreferencesScreen';
 import PrivacySettingsScreen from '../profile/PrivacySettingsScreen';
 import PrivateModeScreen from '../private/PrivateModeScreen';
 import SettingsScreen from '../settings/SettingsScreen';
+import PremiumScreen from '../premium/PremiumScreen';
 import NotificationSettingsScreen from '../settings/NotificationSettingsScreen';
 import ChangePasswordScreen from '../settings/ChangePasswordScreen';
 import LanguageSelectionScreen from '../onboarding/LanguageSelectionScreen';
@@ -95,6 +96,7 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
             onPrivateMode={() => push('privateMode')}
             onPrivacy={() => push('privacy')}
             onSettings={() => push('settings')}
+            onPremium={() => push('premium')}
           />
         );
       default:
@@ -187,6 +189,8 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
             }}
           />
         );
+      case 'premium':
+        return <PremiumScreen language={language} onBack={pop} onSubscribe={pop} />;
       case 'privacy':
         return <PrivacySettingsScreen language={language} onBack={pop} />;
       case 'privateMode':

@@ -19,14 +19,14 @@ export const radius = {
 
 export const shadow = {
   soft: {
-    shadowColor: '#1A1018',
+    shadowColor: '#1E0A2E',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.18,
     shadowRadius: 14,
     elevation: 6,
   },
   glow: {
-    shadowColor: '#E8537A',
+    shadowColor: '#A855F7',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.45,
     shadowRadius: 22,

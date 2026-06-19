@@ -16,7 +16,7 @@ export default function OptionCard({ icon, title, desc, selected, onPress }) {
         <LinearGradient
           colors={
             selected
-              ? ['rgba(232,83,122,0.40)', 'rgba(123,45,94,0.30)']
+              ? ['rgba(168,85,247,0.40)', 'rgba(123,45,94,0.30)']
               : ['rgba(255,255,255,0.12)', 'rgba(255,255,255,0.05)']
           }
           start={{ x: 0, y: 0 }}

@@ -21,6 +21,15 @@ export const HOME_STRINGS = {
   nearby: { de: 'In der Nähe', en: 'Nearby' },
 };
 
+// Value-proposition strip shown on the Discover screen.
+// Icons use MaterialCommunityIcons names.
+export const HOME_FEATURES = [
+  { icon: 'heart-outline', title: { de: 'Echt', en: 'Real' }, sub: { de: 'Ehrliche Profile', en: 'Honest profiles' } },
+  { icon: 'shield-check-outline', title: { de: 'Sicher', en: 'Safe' }, sub: { de: 'Verifizierte Mitglieder', en: 'Verified members' } },
+  { icon: 'diamond-outline', title: { de: 'Qualität', en: 'Quality' }, sub: { de: 'Ernsthafte Beziehungen', en: 'Serious relationships' } },
+  { icon: 'star-outline', title: { de: 'Verbindung', en: 'Connection' }, sub: { de: 'Gemeinsame Werte', en: 'Shared values' } },
+];
+
 export const TABS = [
   { key: 'discover', icon: 'flame', label: { de: 'Entdecken', en: 'Discover' } },
   { key: 'matches', icon: 'heart', label: { de: 'Matches', en: 'Matches' } },

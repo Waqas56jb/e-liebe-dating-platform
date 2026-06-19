@@ -85,7 +85,7 @@ export default function ChatScreen({ language = 'de', conversation, onBack, onVi
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
@@ -307,14 +307,14 @@ const styles = StyleSheet.create({
   sendGrad: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   // sheet
   sheetBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet: { backgroundColor: '#241620', borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, padding: spacing.lg, paddingBottom: spacing.xl },
+  sheet: { backgroundColor: '#2A1240', borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, padding: spacing.lg, paddingBottom: spacing.xl },
   sheetItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.08)' },
   sheetLabel: { ...typography.body, color: colors.white, marginLeft: spacing.md, fontSize: 16 },
   cancelBtn: { marginTop: spacing.md, paddingVertical: 14, alignItems: 'center', backgroundColor: colors.glass, borderRadius: radius.lg },
   cancelText: { ...typography.button, color: colors.white },
   // confirm
   confirmBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
-  confirmBox: { width: '100%', backgroundColor: '#241620', borderRadius: radius.xl, padding: spacing.xl, alignItems: 'center' },
+  confirmBox: { width: '100%', backgroundColor: '#2A1240', borderRadius: radius.xl, padding: spacing.xl, alignItems: 'center' },
   confirmIcon: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(255,59,92,0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg },
   confirmTitle: { ...typography.title, color: colors.white, textAlign: 'center' },
   confirmBody: { ...typography.body, color: 'rgba(255,255,255,0.75)', textAlign: 'center', marginTop: spacing.sm, marginBottom: spacing.xl },

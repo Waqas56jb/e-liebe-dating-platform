@@ -29,12 +29,12 @@ export default function PrivateModeScreen({ language = 'de', onBack }) {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScreenHeader title={pick(PV.title, language)} onBack={onBack} />
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           {/* Hero */}
-          <LinearGradient colors={['#7B2D5E', '#9B5DE5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
+          <LinearGradient colors={['#4B1D6D', '#9B5DE5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
             <View style={styles.heroIcon}>
               <Ionicons name="lock-closed" size={30} color={colors.white} />
             </View>
@@ -67,7 +67,7 @@ export default function PrivateModeScreen({ language = 'de', onBack }) {
               />
               <ToggleRow
                 icon="pause-circle"
-                tint="#E9C46A"
+                tint="#D4AF37"
                 label={pick(PV.pause, language)}
                 sub={pick(PV.pauseSub, language)}
                 value={pause}

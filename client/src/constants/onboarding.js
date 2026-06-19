@@ -10,8 +10,8 @@ export const ONBOARDING_SLIDES = [
     description:
       'Lerne Menschen kennen, die das Gleiche suchen wie du – eine ernsthafte, tiefe Beziehung.',
     image:
-      'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=1080&q=80&auto=format&fit=crop',
-    accent: '#E8537A',
+      'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=2000&q=90&fit=crop&auto=format&fit=crop',
+    accent: '#A855F7',
   },
   {
     key: 'match',
@@ -20,8 +20,8 @@ export const ONBOARDING_SLIDES = [
     description:
       'Unser Matching bringt dich mit Menschen zusammen, die zu deinen Werten und Wünschen passen.',
     image:
-      'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=1080&q=80&auto=format&fit=crop',
-    accent: '#FF9A8B',
+      'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=2000&q=90&fit=crop&auto=format&fit=crop',
+    accent: '#FF6FAE',
   },
   {
     key: 'private',
@@ -30,8 +30,8 @@ export const ONBOARDING_SLIDES = [
     description:
       'Mit dem privaten Beziehungsmodus bestimmst du selbst, wer dich sieht. Sicher, geprüft, vertraulich.',
     image:
-      'https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=1080&q=80&auto=format&fit=crop',
-    accent: '#E9C46A',
+      'https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=2000&q=90&fit=crop&auto=format&fit=crop',
+    accent: '#D4AF37',
   },
 ];
 

@@ -2,19 +2,18 @@
 // Each value is { de, en } and resolved via utils/i18n -> pick().
 
 export const WELCOME_STRINGS = {
-  overline: { de: 'WILLKOMMEN', en: 'WELCOME' },
-  headline: { de: 'Liebe beginnt\nhier', en: 'Love starts\nhere' },
-  tagline: {
-    de: 'Ernsthafte Beziehungen für Menschen in Deutschland & der Schweiz.',
-    en: 'Serious relationships for people in Germany & Switzerland.',
+  tagline: { de: 'Allein war gestern – heute ist E‑Liebe.', en: 'Being alone is history – today there’s E‑Liebe.' },
+  headline1: { de: 'Finde nicht irgendeinen Match.', en: 'Don’t find just any match.' },
+  headline2: { de: 'Finde deinen Menschen.', en: 'Find your person.' },
+  sub: {
+    de: 'Lerne Menschen kennen, die echte Beziehungen suchen – sicher, seriös und unkompliziert.',
+    en: 'Meet people looking for real relationships – safe, serious and simple.',
   },
-  createAccount: { de: 'Konto erstellen', en: 'Create account' },
-  login: { de: 'Anmelden', en: 'Log in' },
-  haveAccount: { de: 'Du hast bereits ein Konto?', en: 'Already have an account?' },
-  terms: {
-    de: 'Mit der Fortsetzung stimmst du unseren AGB & der Datenschutzerklärung zu.',
-    en: 'By continuing you agree to our Terms & Privacy Policy.',
-  },
+  register: { de: 'Kostenlos registrieren', en: 'Sign up free' },
+  login: { de: 'Jetzt anmelden', en: 'Log in now' },
+  featSafe: { de: 'Sicher &\nSeriös', en: 'Safe &\nSerious' },
+  featReal: { de: 'Echte\nBeziehungen', en: 'Real\nRelationships' },
+  featPrivacy: { de: 'Datenschutz\ngarantiert', en: 'Privacy\nguaranteed' },
 };
 
 export const REGISTER_STRINGS = {

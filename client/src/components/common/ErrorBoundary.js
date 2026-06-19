@@ -33,10 +33,10 @@ export default class ErrorBoundary extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#1A1018', alignItems: 'center', justifyContent: 'center', padding: 32 },
+  root: { flex: 1, backgroundColor: '#1E0A2E', alignItems: 'center', justifyContent: 'center', padding: 32 },
   emoji: { fontSize: 48, marginBottom: 16 },
   title: { color: '#fff', fontSize: 26, fontWeight: '800' },
   msg: { color: 'rgba(255,255,255,0.8)', fontSize: 15, textAlign: 'center', marginTop: 10, lineHeight: 22 },
-  btn: { marginTop: 28, backgroundColor: '#FF4F6D', paddingHorizontal: 28, paddingVertical: 14, borderRadius: 999 },
+  btn: { marginTop: 28, backgroundColor: '#FF6FAE', paddingHorizontal: 28, paddingVertical: 14, borderRadius: 999 },
   btnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
 });

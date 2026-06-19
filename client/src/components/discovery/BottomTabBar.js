@@ -34,7 +34,7 @@ export default function BottomTabBar({ language, active = 'discover', onChange }
 
 const styles = StyleSheet.create({
   wrap: {
-    backgroundColor: 'rgba(26,16,24,0.96)',
+    backgroundColor: 'rgba(30,10,46,0.96)',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.08)',
   },

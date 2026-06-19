@@ -34,7 +34,7 @@ export default function NotificationsScreen({ language = 'de', onBack, onOpenPro
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScreenHeader title={pick(N.title, language)} onBack={onBack} rightIcon="checkmark-done" onRight={markAll} />
 
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   chipText: { ...typography.caption, color: colors.white, fontWeight: '600' },
   chipTextOn: { color: colors.white },
   row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.xl, paddingVertical: spacing.md },
-  rowUnread: { backgroundColor: 'rgba(232,83,122,0.07)' },
+  rowUnread: { backgroundColor: 'rgba(168,85,247,0.07)' },
   avatarWrap: { marginRight: spacing.lg },
   avatar: { width: 52, height: 52, borderRadius: 26 },
   systemAvatar: { backgroundColor: colors.plum, alignItems: 'center', justifyContent: 'center' },

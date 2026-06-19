@@ -13,12 +13,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import ActionBar from '../../components/discovery/ActionBar';
 import { makeT, pick } from '../../utils/i18n';
 import { colors, spacing, typography, radius } from '../../theme';
-import { INTEREST_OPTIONS, RELATIONSHIP_GOALS, COUNTRY_OPTIONS } from '../../constants/profileSetup';
+import { INTEREST_OPTIONS, RELATIONSHIP_GOALS, COUNTRY_OPTIONS, LIFESTYLE_GROUPS } from '../../constants/profileSetup';
 import { RELIGION_OPTIONS } from '../../constants/profiles';
 import { HOME_STRINGS as H } from '../../constants/home';
+
+const CHILDREN_OPTIONS = LIFESTYLE_GROUPS.find((g) => g.key === 'children')?.options || [];
+const L = (de, en, lang) => (lang === 'de' ? de : en);
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -27,21 +29,16 @@ const labelOf = (options, key, language, fallback = '—') => {
   return f ? pick(f.label, language) : fallback;
 };
 
-export default function ProfileDetailScreen({ language = 'de', profile, onBack, onLike, onPass, onSuperLike }) {
+export default function ProfileDetailScreen({ language = 'de', profile, onBack }) {
   const t = makeT(language);
   const [photoIndex, setPhotoIndex] = useState(0);
   if (!profile) return null;
-
-  const act = (fn) => {
-    fn?.(profile);
-    onBack?.();
-  };
 
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Photo carousel */}
         <View style={styles.carousel}>
           <ScrollView
@@ -55,7 +52,7 @@ export default function ProfileDetailScreen({ language = 'de', profile, onBack, 
             ))}
           </ScrollView>
           <LinearGradient colors={['rgba(0,0,0,0.4)', 'transparent']} style={styles.topFade} />
-          <LinearGradient colors={['transparent', 'rgba(26,16,24,1)']} style={styles.bottomFade} />
+          <LinearGradient colors={['transparent', 'rgba(30,10,46,1)']} style={styles.bottomFade} />
 
           <View style={styles.dots}>
             {profile.photos.map((_, i) => (
@@ -78,19 +75,30 @@ export default function ProfileDetailScreen({ language = 'de', profile, onBack, 
             </Text>
             {profile.verified && <Ionicons name="checkmark-circle" size={22} color={colors.star} style={{ marginLeft: 8 }} />}
           </View>
-          <Text style={styles.job}>{profile.job}</Text>
-
-          {/* Quick facts */}
-          <View style={styles.facts}>
-            <Fact icon="location-outline" text={`${profile.city} · ${labelOf(COUNTRY_OPTIONS, profile.country, language)}`} />
-            <Fact icon="navigate-outline" text={`${profile.distance} ${pick(H.km, language)}`} />
-            <Fact icon="heart-outline" text={labelOf(RELATIONSHIP_GOALS, profile.goal, language)} />
-            <Fact icon="book-outline" text={labelOf(RELIGION_OPTIONS, profile.religion, language)} />
-          </View>
+          <Text style={styles.job}>
+            <Ionicons name="location-outline" size={14} color="rgba(255,255,255,0.8)" /> {profile.city} ·{' '}
+            {profile.distance} {pick(H.km, language)}
+          </Text>
 
           {/* Bio */}
-          <Text style={styles.sectionTitle}>{language === 'de' ? 'Über mich' : 'About me'}</Text>
+          <Text style={styles.sectionTitle}>{L('Über mich', 'About me', language)}</Text>
           <Text style={styles.bio}>{profile.bio}</Text>
+
+          {/* Detail list */}
+          <View style={styles.detailCard}>
+            <DetailRow icon="briefcase-outline" label={L('Beruf', 'Job', language)} value={profile.job} />
+            {profile.education ? (
+              <DetailRow icon="school-outline" label={L('Bildung', 'Education', language)} value={profile.education} />
+            ) : null}
+            {profile.height ? (
+              <DetailRow icon="resize-outline" label={L('Größe', 'Height', language)} value={`${profile.height} cm`} />
+            ) : null}
+            {profile.children ? (
+              <DetailRow icon="happy-outline" label={L('Kinder', 'Children', language)} value={labelOf(CHILDREN_OPTIONS, profile.children, language)} />
+            ) : null}
+            <DetailRow icon="heart-outline" label={L('Beziehungsziel', 'Looking for', language)} value={labelOf(RELATIONSHIP_GOALS, profile.goal, language)} />
+            <DetailRow icon="book-outline" label={L('Religion', 'Religion', language)} value={labelOf(RELIGION_OPTIONS, profile.religion, language)} last />
+          </View>
 
           {/* Interests */}
           <Text style={styles.sectionTitle}>{language === 'de' ? 'Interessen' : 'Interests'}</Text>
@@ -103,28 +111,18 @@ export default function ProfileDetailScreen({ language = 'de', profile, onBack, 
           </View>
         </View>
       </ScrollView>
-
-      {/* Floating actions */}
-      <View style={styles.actions}>
-        <SafeAreaView edges={['bottom']}>
-          <ActionBar
-            onRewind={onBack}
-            onPass={() => act(onPass)}
-            onSuperLike={() => act(onSuperLike)}
-            onLike={() => act(onLike)}
-            onBoost={() => {}}
-          />
-        </SafeAreaView>
-      </View>
     </View>
   );
 }
 
-function Fact({ icon, text }) {
+function DetailRow({ icon, label, value, last }) {
   return (
-    <View style={styles.fact}>
-      <Ionicons name={icon} size={16} color={colors.rose} />
-      <Text style={styles.factText}>{text}</Text>
+    <View style={[styles.detailRow, last && { borderBottomWidth: 0 }]}>
+      <View style={styles.detailIcon}>
+        <Ionicons name={icon} size={17} color={colors.rose} />
+      </View>
+      <Text style={styles.detailLabel}>{label}</Text>
+      <Text style={styles.detailValue} numberOfLines={1}>{value}</Text>
     </View>
   );
 }
@@ -152,9 +150,27 @@ const styles = StyleSheet.create({
   nameRow: { flexDirection: 'row', alignItems: 'center' },
   name: { ...typography.h1, color: colors.white, fontSize: 30 },
   job: { ...typography.body, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
-  facts: { marginTop: spacing.lg, marginBottom: spacing.sm },
-  fact: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
-  factText: { ...typography.body, color: 'rgba(255,255,255,0.9)', marginLeft: 10, fontSize: 15 },
+  detailCard: {
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.sm,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 13,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  detailIcon: {
+    width: 34, height: 34, borderRadius: 10, backgroundColor: 'rgba(168,85,247,0.18)',
+    alignItems: 'center', justifyContent: 'center', marginRight: spacing.md,
+  },
+  detailLabel: { ...typography.body, color: 'rgba(255,255,255,0.7)', fontSize: 14, width: 110 },
+  detailValue: { ...typography.bodyStrong, color: colors.white, fontSize: 14, flex: 1, textAlign: 'right' },
   sectionTitle: { ...typography.overline, color: colors.rose, marginTop: spacing.lg, marginBottom: spacing.sm },
   bio: { ...typography.body, color: 'rgba(255,255,255,0.92)', lineHeight: 23 },
   tags: { flexDirection: 'row', flexWrap: 'wrap' },
@@ -176,7 +192,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
-    backgroundColor: 'rgba(26,16,24,0.95)',
+    backgroundColor: 'rgba(30,10,46,0.95)',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.08)',
   },

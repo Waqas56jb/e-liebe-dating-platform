@@ -130,7 +130,7 @@ export default function ProfileSetupScreen({ language = 'de', onComplete, onExit
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" />
-      <LinearGradient colors={['#4A1130', '#1A1018']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#4B1D6D', '#1E0A2E']} style={StyleSheet.absoluteFill} />
 
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         {/* Header */}

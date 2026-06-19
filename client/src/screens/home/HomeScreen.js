@@ -6,7 +6,7 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 
 import SwipeDeck from '../../components/discovery/SwipeDeck';
-import ActionBar from '../../components/discovery/ActionBar';
+import FeatureStrip from '../../components/discovery/FeatureStrip';
 import Logo from '../../components/common/Logo';
 import { pick } from '../../utils/i18n';
 import { colors, spacing, typography } from '../../theme';
@@ -50,7 +50,7 @@ export default function HomeScreen({
 
       {/* Ambient backdrop */}
       <View style={StyleSheet.absoluteFill}>
-        <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
         {topCard ? (
           <Animated.Image
             source={{ uri: topCard.photos[0] }}
@@ -60,7 +60,7 @@ export default function HomeScreen({
         ) : null}
         <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
         <LinearGradient
-          colors={['rgba(26,16,24,0.5)', 'rgba(26,16,24,0.2)', 'rgba(26,16,24,0.85)']}
+          colors={['rgba(30,10,46,0.5)', 'rgba(30,10,46,0.2)', 'rgba(30,10,46,0.85)']}
           style={StyleSheet.absoluteFill}
         />
       </View>
@@ -68,7 +68,7 @@ export default function HomeScreen({
       <SafeAreaView style={styles.safe} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <Logo size={44} chip />
+          <Logo size={52} />
 
           <View style={styles.headerActions}>
             <HeaderIcon icon="notifications-outline" badge onPress={onOpenNotifications} />
@@ -103,15 +103,19 @@ export default function HomeScreen({
           />
         </View>
 
-        {/* Actions */}
+        {/* Value-proposition strip — tappable, same actions as the old bar */}
         {profiles.length > 0 ? (
           <View style={styles.actions}>
-            <ActionBar
-              onRewind={() => {}}
-              onPass={() => deckRef.current?.swipeLeft()}
-              onSuperLike={() => deckRef.current?.swipeUp()}
-              onLike={() => deckRef.current?.swipeRight()}
-              onBoost={() => {}}
+            <FeatureStrip
+              language={language}
+              onPress={(i) => {
+                const deck = deckRef.current;
+                if (!deck) return;
+                if (i === 1) deck.swipeLeft(); // Sicher → Pass
+                else if (i === 2) deck.swipeRight(); // Qualität → Like
+                else if (i === 3) deck.swipeUp(); // Verbindung → Super Like
+                // i === 0 (Echt) → Rewind (no-op, as before)
+              }}
             />
           </View>
         ) : (
@@ -145,8 +149,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.md,
   },
   brandRow: { flexDirection: 'row', alignItems: 'center' },
   logoBadge: {

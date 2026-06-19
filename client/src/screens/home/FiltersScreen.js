@@ -21,7 +21,7 @@ export default function FiltersScreen({ language = 'de', filters = DEFAULT_FILTE
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" />
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
 
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         {/* Header */}

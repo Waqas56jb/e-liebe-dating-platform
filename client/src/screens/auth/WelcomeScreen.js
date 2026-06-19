@@ -1,28 +1,39 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, ImageBackground, StatusBar, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  StatusBar,
+  Pressable,
+  ImageBackground,
+  ScrollView,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import AuthButton from '../../components/common/AuthButton';
 import Logo from '../../components/common/Logo';
 import { WELCOME_STRINGS as S } from '../../constants/auth';
 import { makeT } from '../../utils/i18n';
 import { useResponsive } from '../../hooks/useResponsive';
-import { colors, gradients, spacing, typography } from '../../theme';
+import { colors, spacing } from '../../theme';
 
-const BG_IMAGE =
-  'https://images.unsplash.com/photo-1522098635833-216c03d81fbe?w=1080&q=80&auto=format&fit=crop';
+const BG = require('../../../assets/background.jpg');
+const GOLD = '#E3C04B';
+const GOLD_DEEP = '#C49A36';
+const SERIF = Platform.select({ ios: 'Georgia', android: 'serif', default: 'serif' });
 
-export default function WelcomeScreen({ language = 'de', onLogin, onCreateAccount, onBack }) {
+export default function WelcomeScreen({ language = 'de', onLogin, onCreateAccount }) {
   const t = makeT(language);
   const { scale } = useResponsive();
 
   const fade = useRef(new Animated.Value(0)).current;
-  const rise = useRef(new Animated.Value(40)).current;
+  const rise = useRef(new Animated.Value(20)).current;
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fade, { toValue: 1, duration: 650, useNativeDriver: true }),
+      Animated.timing(fade, { toValue: 1, duration: 700, useNativeDriver: true }),
       Animated.spring(rise, { toValue: 0, friction: 8, useNativeDriver: true }),
     ]).start();
   }, [fade, rise]);
@@ -30,87 +41,119 @@ export default function WelcomeScreen({ language = 'de', onLogin, onCreateAccoun
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" />
-      <ImageBackground source={{ uri: BG_IMAGE }} style={StyleSheet.absoluteFill} resizeMode="cover">
-        <LinearGradient colors={gradients.duskOverlay} locations={[0, 0.35, 1]} style={StyleSheet.absoluteFill} />
+      <ImageBackground source={BG} style={StyleSheet.absoluteFill} resizeMode="cover">
+        <LinearGradient
+          colors={['rgba(20,2,6,0.1)', 'rgba(20,2,6,0.5)', 'rgba(14,1,4,0.95)']}
+          locations={[0, 0.4, 0.7]}
+          style={StyleSheet.absoluteFill}
+        />
       </ImageBackground>
 
-      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-        <View style={styles.topRow}>
-          {onBack ? (
-            <Pressable hitSlop={12} onPress={onBack} style={styles.backBtn}>
-              <Ionicons name="chevron-back" size={22} color={colors.white} />
+      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+          <Animated.View style={[styles.content, { opacity: fade, transform: [{ translateY: rise }] }]}>
+            {/* Logo */}
+            <Logo size={scale(130)} withWordmark style={styles.logoRow} />
+
+            {/* Gold tagline */}
+            <Text style={[styles.tagline, { fontSize: scale(12.5) }]}>{t(S.tagline)}</Text>
+
+            {/* Divider with heart */}
+            <View style={styles.divider}>
+              <View style={styles.divLine} />
+              <Ionicons name="heart-outline" size={14} color={GOLD} style={{ marginHorizontal: 10 }} />
+              <View style={styles.divLine} />
+            </View>
+
+            {/* Headline */}
+            <Text style={[styles.head, { color: colors.white, fontSize: scale(23) }]}>{t(S.headline1)}</Text>
+            <Text style={[styles.head, { color: GOLD, fontSize: scale(23), marginBottom: spacing.md }]}>
+              {t(S.headline2)}
+            </Text>
+
+            {/* Sub */}
+            <Text style={[styles.sub, { fontSize: scale(13.5) }]}>{t(S.sub)}</Text>
+
+            {/* Buttons */}
+            <Pressable onPress={onCreateAccount} style={styles.registerWrap}>
+              <LinearGradient colors={[GOLD, GOLD_DEEP]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.register}>
+                <Text style={styles.registerText}>{t(S.register).toUpperCase()}</Text>
+              </LinearGradient>
             </Pressable>
-          ) : (
-            <View style={styles.spacer} />
-          )}
-          <Logo size={42} chip />
-          <View style={styles.spacer} />
-        </View>
 
-        <Animated.View style={[styles.body, { opacity: fade, transform: [{ translateY: rise }] }]}>
-          <View style={styles.accentLine} />
-          <Text style={[typography.overline, styles.overline]}>{t(S.overline)}</Text>
-          <Text style={[typography.display, styles.headline, { fontSize: scale(46) }]}>
-            {t(S.headline)}
-          </Text>
-          <Text style={[typography.body, styles.tagline]}>{t(S.tagline)}</Text>
-        </Animated.View>
-
-        <Animated.View style={[styles.footer, { opacity: fade }]}>
-          <AuthButton
-            label={t(S.createAccount)}
-            icon="sparkles"
-            variant="primary"
-            onPress={onCreateAccount}
-            style={{ width: '100%' }}
-          />
-          <AuthButton
-            label={t(S.login)}
-            icon="log-in-outline"
-            variant="glass"
-            onPress={onLogin}
-            style={{ width: '100%', marginTop: spacing.md }}
-          />
-
-          <View style={styles.haveRow}>
-            <Text style={styles.haveText}>{t(S.haveAccount)} </Text>
-            <Pressable hitSlop={8} onPress={onLogin}>
-              <Text style={styles.haveLink}>{t(S.login)}</Text>
+            <Pressable onPress={onLogin} style={styles.loginBtn}>
+              <Text style={styles.loginText}>{t(S.login).toUpperCase()}</Text>
             </Pressable>
-          </View>
 
-          <Text style={styles.terms}>{t(S.terms)}</Text>
-        </Animated.View>
+            {/* Features */}
+            <View style={styles.features}>
+              <Feature icon="shield-checkmark-outline" label={t(S.featSafe)} />
+              <Feature icon="heart-outline" label={t(S.featReal)} />
+              <Feature icon="lock-closed-outline" label={t(S.featPrivacy)} />
+            </View>
+          </Animated.View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );
 }
 
+function Feature({ icon, label }) {
+  return (
+    <View style={styles.feature}>
+      <Ionicons name={icon} size={22} color={GOLD} />
+      <Text style={styles.featureText}>{label}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.ink },
-  safe: { flex: 1, paddingHorizontal: spacing.xl, justifyContent: 'space-between' },
-  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.sm },
-  backBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: colors.glass,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
+  root: { flex: 1, backgroundColor: '#100104' },
+  // Anchor everything to the bottom so the couple shows on top and the
+  // feature row always stays on-screen; scrolls only if it can't fit.
+  scroll: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.md,
+  },
+  content: { alignItems: 'center' },
+  logoRow: { marginBottom: spacing.sm },
+  tagline: { color: GOLD, marginTop: 6, textAlign: 'center', letterSpacing: 0.3 },
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: spacing.md, width: '62%' },
+  divLine: { flex: 1, height: 1, backgroundColor: 'rgba(227,192,75,0.5)' },
+  head: { fontFamily: SERIF, fontWeight: '600', textAlign: 'center', lineHeight: 30 },
+  sub: {
+    color: 'rgba(255,255,255,0.9)',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: spacing.lg,
+    maxWidth: '94%',
+  },
+  registerWrap: { width: '100%', borderRadius: 12, overflow: 'hidden' },
+  register: { height: 52, alignItems: 'center', justifyContent: 'center', borderRadius: 12 },
+  registerText: { color: '#2A1A05', fontWeight: '800', fontSize: 14, letterSpacing: 1 },
+  loginBtn: {
+    width: '100%',
+    height: 52,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: GOLD,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: spacing.sm,
   },
-  spacer: { width: 42, height: 42 },
-  brandRow: { flexDirection: 'row', alignItems: 'center' },
-  brand: { ...typography.title, color: colors.white, marginLeft: 8, letterSpacing: 0.5 },
-  body: { flex: 1, justifyContent: 'flex-end', paddingBottom: spacing.xl },
-  accentLine: { width: 48, height: 4, borderRadius: 2, backgroundColor: colors.rose, marginBottom: spacing.lg },
-  overline: { color: 'rgba(255,255,255,0.85)', marginBottom: spacing.md },
-  headline: { color: colors.white, lineHeight: 52 },
-  tagline: { color: 'rgba(255,255,255,0.9)', marginTop: spacing.md, maxWidth: '92%' },
-  footer: { paddingBottom: spacing.md },
-  haveRow: { flexDirection: 'row', justifyContent: 'center', marginTop: spacing.lg },
-  haveText: { ...typography.caption, color: 'rgba(255,255,255,0.8)' },
-  haveLink: { ...typography.caption, color: colors.white, fontWeight: '800', textDecorationLine: 'underline' },
-  terms: { ...typography.caption, color: 'rgba(255,255,255,0.6)', textAlign: 'center', marginTop: spacing.lg, fontSize: 11 },
+  loginText: { color: GOLD, fontWeight: '700', fontSize: 14, letterSpacing: 1 },
+  features: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: spacing.xl, paddingHorizontal: spacing.sm },
+  feature: { flex: 1, alignItems: 'center' },
+  featureText: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 10.5,
+    letterSpacing: 0.8,
+    textAlign: 'center',
+    marginTop: 7,
+    textTransform: 'uppercase',
+    fontWeight: '600',
+  },
 });

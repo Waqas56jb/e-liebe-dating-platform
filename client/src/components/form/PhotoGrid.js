@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: 'rgba(232,83,122,0.5)',
+    borderColor: 'rgba(168,85,247,0.5)',
     borderStyle: 'dashed',
     borderRadius: radius.md,
   },

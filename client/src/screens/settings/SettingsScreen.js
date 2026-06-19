@@ -31,7 +31,7 @@ export default function SettingsScreen({
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScreenHeader title={pick(S.title, language)} onBack={onBack} />
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -52,7 +52,7 @@ export default function SettingsScreen({
           <View style={{ height: spacing.lg }} />
           <SectionLabel>{pick(S.security, language)}</SectionLabel>
           <Card>
-            <MenuRow icon="key" tint="#E9C46A" label={pick(S.changePassword, language)} onPress={onChangePassword} />
+            <MenuRow icon="key" tint="#D4AF37" label={pick(S.changePassword, language)} onPress={onChangePassword} />
             <MenuRow icon="finger-print" tint="#9B5DE5" label={pick(S.twoFactor, language)} value={pick(S.off ?? { de: 'Aus', en: 'Off' }, language)} last />
           </Card>
 
@@ -101,8 +101,8 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: spacing.xl, paddingTop: spacing.md, paddingBottom: spacing.xxl },
   version: { ...typography.caption, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: spacing.xl },
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
-  box: { width: '100%', backgroundColor: '#241620', borderRadius: radius.xl, padding: spacing.xl, alignItems: 'center' },
-  boxIcon: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(232,83,122,0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg },
+  box: { width: '100%', backgroundColor: '#2A1240', borderRadius: radius.xl, padding: spacing.xl, alignItems: 'center' },
+  boxIcon: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(168,85,247,0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg },
   boxTitle: { ...typography.title, color: colors.white, textAlign: 'center' },
   boxBody: { ...typography.body, color: 'rgba(255,255,255,0.75)', textAlign: 'center', marginTop: spacing.sm, marginBottom: spacing.xl },
   boxPrimary: { width: '100%', backgroundColor: colors.rose, borderRadius: radius.pill, paddingVertical: 16, alignItems: 'center' },

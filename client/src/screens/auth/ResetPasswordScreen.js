@@ -16,13 +16,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 import FormInput from '../../components/form/FormInput';
 import AuthButton from '../../components/common/AuthButton';
+import Logo from '../../components/common/Logo';
 import { RESET_STRINGS as S } from '../../constants/profileSetup';
 import { makeT } from '../../utils/i18n';
 import { useResponsive } from '../../hooks/useResponsive';
 import { colors, gradients, spacing, typography, radius } from '../../theme';
 
 const BG_IMAGE =
-  'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=1080&q=80&auto=format&fit=crop';
+  'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=2000&q=90&fit=crop&auto=format&fit=crop';
 
 const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
@@ -51,10 +52,7 @@ export default function ResetPasswordScreen({ language = 'de', onBack, onDone })
             <Pressable hitSlop={12} onPress={onBack} style={styles.iconBtn}>
               <Ionicons name="chevron-back" size={22} color={colors.white} />
             </Pressable>
-            <View style={styles.brandRow}>
-              <Ionicons name="heart" size={18} color={colors.white} />
-              <Text style={styles.brand}>E‑Liebe</Text>
-            </View>
+            <Logo size={60} chip />
             <View style={styles.iconBtn} />
           </View>
 

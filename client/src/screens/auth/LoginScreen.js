@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
 import AuthButton from '../../components/common/AuthButton';
+import Logo from '../../components/common/Logo';
 import { LOGIN_STRINGS as S } from '../../constants/auth';
 import { makeT } from '../../utils/i18n';
 import { useResponsive } from '../../hooks/useResponsive';
@@ -24,9 +25,9 @@ import { validateLogin } from '../../services/authStore';
 import { colors, gradients, spacing, typography, radius } from '../../theme';
 
 const BG_IMAGE =
-  'https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=1080&q=80&auto=format&fit=crop';
+  'https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=2000&q=90&fit=crop&auto=format&fit=crop';
 
-export default function LoginScreen({ language = 'de', onBack, onRegister, onSignIn, onGoogle, onApple, onForgot }) {
+export default function LoginScreen({ language = 'de', onBack, onRegister, onSignIn, onForgot }) {
   const t = makeT(language);
   const { scale } = useResponsive();
   const [email, setEmail] = useState('');
@@ -60,10 +61,7 @@ export default function LoginScreen({ language = 'de', onBack, onRegister, onSig
               <Pressable hitSlop={12} onPress={onBack} style={styles.backBtn}>
                 <Ionicons name="chevron-back" size={22} color={colors.white} />
               </Pressable>
-              <View style={styles.brandRow}>
-                <Ionicons name="heart" size={18} color={colors.white} />
-                <Text style={styles.brand}>E‑Liebe</Text>
-              </View>
+              <Logo size={60} chip />
               <View style={styles.backBtn} />
             </View>
 
@@ -105,15 +103,6 @@ export default function LoginScreen({ language = 'de', onBack, onRegister, onSig
               )}
 
               <AuthButton label={t(S.signIn)} icon="arrow-forward" variant="primary" onPress={handleSignIn} style={{ width: '100%', marginTop: spacing.sm }} />
-
-              <View style={styles.dividerRow}>
-                <View style={styles.divider} />
-                <Text style={styles.dividerText}>{t(S.or)}</Text>
-                <View style={styles.divider} />
-              </View>
-
-              <AuthButton label={t(S.google)} icon="logo-google" variant="light" onPress={onGoogle} style={{ width: '100%' }} />
-              <AuthButton label={t(S.apple)} icon="logo-apple" variant="dark" onPress={onApple} style={{ width: '100%', marginTop: spacing.md }} />
 
               <View style={styles.haveRow}>
                 <Text style={styles.haveText}>{t(S.noAccount)} </Text>

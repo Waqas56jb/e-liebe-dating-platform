@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
 import AuthButton from '../../components/common/AuthButton';
+import Logo from '../../components/common/Logo';
 import { EMAIL_SIGNUP_STRINGS as S } from '../../constants/auth';
 import { makeT, pick } from '../../utils/i18n';
 import { useResponsive } from '../../hooks/useResponsive';
@@ -24,7 +25,7 @@ import { emailExists } from '../../services/authStore';
 import { colors, gradients, spacing, typography, radius } from '../../theme';
 
 const BG_IMAGE =
-  'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=1080&q=80&auto=format&fit=crop';
+  'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=2000&q=90&fit=crop&auto=format&fit=crop';
 
 const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
@@ -81,10 +82,7 @@ export default function EmailSignupScreen({ language = 'de', onBack, onLogin, on
             <Pressable hitSlop={12} onPress={onBack} style={styles.iconBtn}>
               <Ionicons name="chevron-back" size={22} color={colors.white} />
             </Pressable>
-            <View style={styles.brandRow}>
-              <Ionicons name="heart" size={18} color={colors.white} />
-              <Text style={styles.brand}>E‑Liebe</Text>
-            </View>
+            <Logo size={60} chip />
             <View style={styles.iconBtn} />
           </View>
 

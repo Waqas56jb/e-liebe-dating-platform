@@ -24,7 +24,7 @@ export default function NotificationSettingsScreen({ language = 'de', onBack }) 
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={['#1A1018', '#2B0E1E']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScreenHeader title={pick(S.notifTitle, language)} onBack={onBack} />
         <ScrollView contentContainerStyle={styles.scroll}>
@@ -33,7 +33,7 @@ export default function NotificationSettingsScreen({ language = 'de', onBack }) 
             <MenuRow icon="heart" label={pick(S.nNewMatches, language)} mode="toggle" toggled={state.matches} onToggle={() => toggle('matches')} />
             <MenuRow icon="chatbubble" tint="#3FA7FF" label={pick(S.nMessages, language)} mode="toggle" toggled={state.messages} onToggle={() => toggle('messages')} />
             <MenuRow icon="thumbs-up" tint="#3DDC97" label={pick(S.nLikes, language)} mode="toggle" toggled={state.likes} onToggle={() => toggle('likes')} />
-            <MenuRow icon="eye" tint="#E9C46A" label={pick(S.nViews, language)} mode="toggle" toggled={state.views} onToggle={() => toggle('views')} />
+            <MenuRow icon="eye" tint="#D4AF37" label={pick(S.nViews, language)} mode="toggle" toggled={state.views} onToggle={() => toggle('views')} />
             <MenuRow icon="megaphone" tint="#9B5DE5" label={pick(S.nPromos, language)} mode="toggle" toggled={state.promos} onToggle={() => toggle('promos')} last />
           </Card>
 
