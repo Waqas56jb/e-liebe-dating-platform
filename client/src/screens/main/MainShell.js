@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import BottomTabBar from '../../components/discovery/BottomTabBar';
@@ -21,39 +21,20 @@ import NotificationSettingsScreen from '../settings/NotificationSettingsScreen';
 import ChangePasswordScreen from '../settings/ChangePasswordScreen';
 import LanguageSelectionScreen from '../onboarding/LanguageSelectionScreen';
 
-import { PROFILES, DEFAULT_FILTERS } from '../../constants/profiles';
 import { colors } from '../../theme';
 
-function applyFilters(profiles, f) {
-  return profiles.filter((p) => {
-    if (p.age < f.ageMin || p.age > f.ageMax) return false;
-    if (p.distance > f.distanceMax) return false;
-    if (f.religion.length > 0 && !f.religion.includes(p.religion)) return false;
-    if (f.interests.length > 0 && !p.interests.some((k) => f.interests.includes(k))) return false;
-    return true;
-  });
-}
-const filtersActiveOf = (f) =>
-  f.ageMin !== DEFAULT_FILTERS.ageMin ||
-  f.ageMax !== DEFAULT_FILTERS.ageMax ||
-  f.distanceMax !== DEFAULT_FILTERS.distanceMax ||
-  f.religion.length > 0 ||
-  f.interests.length > 0;
-
-export default function MainShell({ language, email, profile, onChangeLanguage, onLogout }) {
+export default function MainShell({ language, email, onChangeLanguage, onLogout }) {
   const [tab, setTab] = useState('discover');
   const [stack, setStack] = useState([]); // [{ name, params }]
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const [filtersKey, setFiltersKey] = useState(0);
-  const [myProfile, setMyProfile] = useState(profile);
+  const [discoverKey, setDiscoverKey] = useState(0); // bump to refetch the feed
+  const [profileKey, setProfileKey] = useState(0); // bump to refetch my profile
 
   const push = useCallback((name, params = {}) => setStack((s) => [...s, { name, params }]), []);
   const pop = useCallback(() => setStack((s) => s.slice(0, -1)), []);
-  const reset = useCallback(() => setStack([]), []);
-
-  const visibleProfiles = useMemo(() => applyFilters(PROFILES, filters), [filters]);
 
   const top = stack[stack.length - 1];
+
+  const openChat = (conversation) => push('chat', { conversation });
 
   const renderTab = () => {
     switch (tab) {
@@ -61,20 +42,19 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
         return (
           <HomeScreen
             language={language}
-            profiles={visibleProfiles}
-            filtersActive={filtersActiveOf(filters)}
-            filtersKey={String(filtersKey)}
+            reloadKey={discoverKey}
             onOpenFilters={() => push('filters')}
             onOpenNotifications={() => push('notifications')}
             onViewProfile={(p) => push('profileDetail', { profile: p })}
-            onMatch={(p) => push('matchSuccess', { profile: p })}
+            onMatch={(p, match) => push('matchSuccess', { profile: p, matchId: match?.id })}
           />
         );
       case 'matches':
         return (
           <MatchesScreen
             language={language}
-            onOpenChat={(c) => push('chat', { conversation: c })}
+            onOpenChat={openChat}
+            onOpenProfile={(p) => push('profileDetail', { profile: p })}
             onOpenNotifications={() => push('notifications')}
           />
         );
@@ -82,7 +62,7 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
         return (
           <ChatListScreen
             language={language}
-            onOpenChat={(c) => push('chat', { conversation: c })}
+            onOpenChat={openChat}
             onOpenNotifications={() => push('notifications')}
           />
         );
@@ -90,7 +70,7 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
         return (
           <MyProfileScreen
             language={language}
-            profile={myProfile}
+            reloadKey={profileKey}
             onEdit={() => push('editProfile')}
             onPreferences={() => push('preferences')}
             onPrivateMode={() => push('privateMode')}
@@ -111,26 +91,12 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
         return (
           <FiltersScreen
             language={language}
-            filters={filters}
             onClose={pop}
-            onApply={(next) => {
-              setFilters(next);
-              setFiltersKey((k) => k + 1);
-              pop();
-            }}
+            onApplied={() => { setDiscoverKey((k) => k + 1); pop(); }}
           />
         );
       case 'profileDetail':
-        return (
-          <ProfileDetailScreen
-            language={language}
-            profile={params.profile}
-            onBack={pop}
-            onLike={pop}
-            onPass={pop}
-            onSuperLike={pop}
-          />
-        );
+        return <ProfileDetailScreen language={language} profile={params.profile} onBack={pop} />;
       case 'matchSuccess':
         return (
           <MatchSuccessScreen
@@ -138,10 +104,7 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
             profile={params.profile}
             onContinue={pop}
             onSendMessage={(p) => {
-              setStack((s) => [
-                ...s.slice(0, -1),
-                { name: 'chat', params: { conversation: { id: `new-${p.id}`, profileId: p.id, online: true, unread: 0, time: '', lastMessage: { de: '', en: '' } } } },
-              ]);
+              setStack((s) => [...s.slice(0, -1), { name: 'chat', params: { conversation: { id: params.matchId, profile: p } } }]);
               setTab('chats');
             }}
           />
@@ -153,7 +116,7 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
             conversation={params.conversation}
             onBack={pop}
             onViewProfile={(p) => push('profileDetail', { profile: p })}
-            onBlock={() => pop()}
+            onBlock={pop}
           />
         );
       case 'notifications':
@@ -168,29 +131,20 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
         return (
           <EditProfileScreen
             language={language}
-            profile={myProfile}
             onBack={pop}
-            onSave={(data) => {
-              setMyProfile((prev) => ({ ...(prev || {}), ...data }));
-              pop();
-            }}
+            onSaved={() => { setProfileKey((k) => k + 1); setDiscoverKey((k) => k + 1); pop(); }}
           />
         );
       case 'preferences':
         return (
           <PreferencesScreen
             language={language}
-            filters={filters}
             onBack={pop}
-            onSave={(prefs) => {
-              setFilters((f) => ({ ...f, ageMin: prefs.ageMin, ageMax: prefs.ageMax, distanceMax: prefs.distanceMax, religion: prefs.religion }));
-              setFiltersKey((k) => k + 1);
-              pop();
-            }}
+            onSaved={() => { setDiscoverKey((k) => k + 1); pop(); }}
           />
         );
       case 'premium':
-        return <PremiumScreen language={language} onBack={pop} onSubscribe={pop} />;
+        return <PremiumScreen language={language} onBack={pop} onSubscribed={() => { setProfileKey((k) => k + 1); pop(); }} />;
       case 'privacy':
         return <PrivacySettingsScreen language={language} onBack={pop} />;
       case 'privateMode':
@@ -217,10 +171,7 @@ export default function MainShell({ language, email, profile, onChangeLanguage, 
         return (
           <LanguageSelectionScreen
             onBack={pop}
-            onContinue={(code) => {
-              onChangeLanguage?.(code);
-              pop();
-            }}
+            onContinue={(code) => { onChangeLanguage?.(code); pop(); }}
           />
         );
       default:

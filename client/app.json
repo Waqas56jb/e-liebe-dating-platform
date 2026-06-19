@@ -4,7 +4,7 @@
     "slug": "e-liebe",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/splash.png",
+    "icon": "./assets/logo.png",
     "scheme": "eliebe",
     "userInterfaceStyle": "light",
     "backgroundColor": "#1A1018",
@@ -16,7 +16,7 @@
       "package": "com.eliebe.app",
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/splash.png",
+        "foregroundImage": "./assets/logo.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "permissions": [
@@ -24,7 +24,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/splash.png"
+      "favicon": "./assets/logo.png"
     },
     "plugins": [
       [

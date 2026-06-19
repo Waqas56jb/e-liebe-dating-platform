@@ -21,7 +21,7 @@ import Logo from '../../components/common/Logo';
 import { EMAIL_SIGNUP_STRINGS as S } from '../../constants/auth';
 import { makeT, pick } from '../../utils/i18n';
 import { useResponsive } from '../../hooks/useResponsive';
-import { emailExists } from '../../services/authStore';
+import { signUp, signIn, getSession } from '../../services/auth';
 import { colors, gradients, spacing, typography, radius } from '../../theme';
 
 const BG_IMAGE =
@@ -38,7 +38,7 @@ function strength(pw) {
   return Math.min(s, 3); // 0..3
 }
 
-export default function EmailSignupScreen({ language = 'de', onBack, onLogin, onContinue }) {
+export default function EmailSignupScreen({ language = 'de', onBack, onLogin, onSignedUp }) {
   const t = makeT(language);
   const { scale } = useResponsive();
   const [email, setEmail] = useState('');
@@ -63,10 +63,26 @@ export default function EmailSignupScreen({ language = 'de', onBack, onLogin, on
     if (password.length < 6) return setError(t(S.errPwLen));
     if (password !== confirm) return setError(t(S.errMatch));
     setChecking(true);
-    const exists = await emailExists(email);
-    setChecking(false);
-    if (exists) return setError(t(S.errExists));
-    onContinue?.({ email: email.trim(), password });
+    try {
+      await signUp(email, password);
+      // Ensure we actually have a session before entering the wizard.
+      let session = await getSession();
+      if (!session) {
+        try { const d = await signIn(email, password); session = d.session; } catch (_) {}
+      }
+      if (!session) {
+        setError(language === 'de'
+          ? 'Konto erstellt. Bitte bestätige deine E‑Mail, um fortzufahren (oder deaktiviere die E‑Mail‑Bestätigung in Supabase).'
+          : 'Account created. Please confirm your email to continue (or disable email confirmation in Supabase).');
+        return;
+      }
+      onSignedUp?.();
+    } catch (e) {
+      const msg = /registered|exists/i.test(e.message || '') ? t(S.errExists) : e.message;
+      setError(msg);
+    } finally {
+      setChecking(false);
+    }
   };
 
   return (
@@ -77,7 +93,7 @@ export default function EmailSignupScreen({ language = 'de', onBack, onLogin, on
       </ImageBackground>
 
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={0}>
           <View style={styles.topBar}>
             <Pressable hitSlop={12} onPress={onBack} style={styles.iconBtn}>
               <Ionicons name="chevron-back" size={22} color={colors.white} />

@@ -71,7 +71,9 @@ export default function ProfileCard({ profile, language, onInfo }) {
           </View>
           <View style={styles.metaChip}>
             <Ionicons name="location-outline" size={13} color="rgba(255,255,255,0.95)" />
-            <Text style={styles.metaText}>{profile.distance} {pick(H.km, language)}</Text>
+            <Text style={styles.metaText} numberOfLines={1}>
+              {profile.distance ? `${profile.distance} ${pick(H.km, language)}` : (profile.city || '')}
+            </Text>
           </View>
         </View>
 

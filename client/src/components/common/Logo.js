@@ -5,27 +5,19 @@ import { Ionicons } from '@expo/vector-icons';
 const GOLD = '#D4AF37';
 const SERIF = Platform.select({ ios: 'Georgia', android: 'serif', default: 'serif' });
 
-// Code-drawn gold logo: heart outline with serif "E" inside.
-// size   → diameter of the heart icon (controls overall scale).
-// withWordmark → renders "E-Liebe" text beneath the mark.
-// chip   → same as default (mark only), prop kept for API compat.
+// In-app logo mark: gold heart outline with a serif "E", optional wordmark.
+// (The PNG lockup is reserved for the app launcher icon, not in-app screens.)
 export default function Logo({ size = 64, withWordmark = false, chip = false, style }) {
-  const eFontSize = size * 0.40;
+  const eFontSize = size * 0.4;
   const eMarginTop = size * 0.06;
-
   return (
     <View style={[styles.wrap, style]}>
       <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
         <Ionicons name="heart-outline" size={size} color={GOLD} style={StyleSheet.absoluteFill} />
-        <Text style={[styles.e, { fontSize: eFontSize, marginTop: eMarginTop, fontFamily: SERIF }]}>
-          E
-        </Text>
+        <Text style={[styles.e, { fontSize: eFontSize, marginTop: eMarginTop, fontFamily: SERIF }]}>E</Text>
       </View>
-
       {withWordmark ? (
-        <Text style={[styles.wordmark, { fontSize: size * 0.38, fontFamily: SERIF }]}>
-          E‑Liebe
-        </Text>
+        <Text style={[styles.wordmark, { fontSize: size * 0.38, fontFamily: SERIF }]}>E‑Liebe</Text>
       ) : null}
     </View>
   );
@@ -33,14 +25,6 @@ export default function Logo({ size = 64, withWordmark = false, chip = false, st
 
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center' },
-  e: {
-    color: GOLD,
-    fontWeight: '700',
-  },
-  wordmark: {
-    color: GOLD,
-    fontWeight: '600',
-    letterSpacing: 1.5,
-    marginTop: 6,
-  },
+  e: { color: GOLD, fontWeight: '700' },
+  wordmark: { color: GOLD, fontWeight: '600', letterSpacing: 1.5, marginTop: 6 },
 });

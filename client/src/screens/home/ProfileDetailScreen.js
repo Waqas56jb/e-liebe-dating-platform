@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import { colors, spacing, typography, radius } from '../../theme';
 import { INTEREST_OPTIONS, RELATIONSHIP_GOALS, COUNTRY_OPTIONS, LIFESTYLE_GROUPS } from '../../constants/profileSetup';
 import { RELIGION_OPTIONS } from '../../constants/profiles';
 import { HOME_STRINGS as H } from '../../constants/home';
+import { getProfile } from '../../services/api';
 
 const CHILDREN_OPTIONS = LIFESTYLE_GROUPS.find((g) => g.key === 'children')?.options || [];
 const L = (de, en, lang) => (lang === 'de' ? de : en);
@@ -32,6 +33,12 @@ const labelOf = (options, key, language, fallback = '—') => {
 export default function ProfileDetailScreen({ language = 'de', profile, onBack }) {
   const t = makeT(language);
   const [photoIndex, setPhotoIndex] = useState(0);
+
+  // Record a profile view (fire-and-forget) when opened.
+  useEffect(() => {
+    if (profile?.id) getProfile(profile.id, { recordView: true }).catch(() => {});
+  }, [profile?.id]);
+
   if (!profile) return null;
 
   return (
@@ -76,8 +83,8 @@ export default function ProfileDetailScreen({ language = 'de', profile, onBack }
             {profile.verified && <Ionicons name="checkmark-circle" size={22} color={colors.star} style={{ marginLeft: 8 }} />}
           </View>
           <Text style={styles.job}>
-            <Ionicons name="location-outline" size={14} color="rgba(255,255,255,0.8)" /> {profile.city} ·{' '}
-            {profile.distance} {pick(H.km, language)}
+            <Ionicons name="location-outline" size={14} color="rgba(255,255,255,0.8)" /> {profile.city || ''}
+            {profile.distance ? ` · ${profile.distance} ${pick(H.km, language)}` : ''}
           </Text>
 
           {/* Bio */}

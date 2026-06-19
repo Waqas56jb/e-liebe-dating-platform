@@ -21,13 +21,13 @@ import Logo from '../../components/common/Logo';
 import { LOGIN_STRINGS as S } from '../../constants/auth';
 import { makeT } from '../../utils/i18n';
 import { useResponsive } from '../../hooks/useResponsive';
-import { validateLogin } from '../../services/authStore';
+import { signIn } from '../../services/auth';
 import { colors, gradients, spacing, typography, radius } from '../../theme';
 
 const BG_IMAGE =
   'https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=2000&q=90&fit=crop&auto=format&fit=crop';
 
-export default function LoginScreen({ language = 'de', onBack, onRegister, onSignIn, onForgot }) {
+export default function LoginScreen({ language = 'de', onBack, onRegister, onSignedIn, onForgot }) {
   const t = makeT(language);
   const { scale } = useResponsive();
   const [email, setEmail] = useState('');
@@ -40,11 +40,18 @@ export default function LoginScreen({ language = 'de', onBack, onRegister, onSig
     Animated.timing(fade, { toValue: 1, duration: 600, useNativeDriver: true }).start();
   }, [fade]);
 
+  const [busy, setBusy] = useState(false);
   const handleSignIn = async () => {
     setError(null);
-    const account = await validateLogin(email, password);
-    if (account) onSignIn?.(account);
-    else setError(t(S.error));
+    setBusy(true);
+    try {
+      await signIn(email, password);
+      onSignedIn?.();
+    } catch (e) {
+      setError(t(S.error));
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -55,7 +62,7 @@ export default function LoginScreen({ language = 'de', onBack, onRegister, onSig
       </ImageBackground>
 
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={0}>
           <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
             <View style={styles.topBar}>
               <Pressable hitSlop={12} onPress={onBack} style={styles.backBtn}>

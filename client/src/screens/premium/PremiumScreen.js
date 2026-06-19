@@ -7,9 +7,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { makeT, pick } from '../../utils/i18n';
 import { colors, spacing, typography, radius, shadow } from '../../theme';
 import { PREMIUM_STRINGS as PM } from '../../constants/account';
+import { subscribePremium } from '../../services/api';
 
-export default function PremiumScreen({ language = 'de', onBack, onSubscribe }) {
+export default function PremiumScreen({ language = 'de', onBack, onSubscribed }) {
   const t = makeT(language);
+  const onSubscribe = async () => {
+    try { await subscribePremium('premium'); } catch (e) {}
+    onSubscribed?.();
+  };
 
   return (
     <View style={styles.root}>

@@ -10,6 +10,7 @@ import AuthButton from '../../components/common/AuthButton';
 import { makeT, pick } from '../../utils/i18n';
 import { colors, spacing, typography, radius } from '../../theme';
 import { SETTINGS_STRINGS as S } from '../../constants/account';
+import { changePassword } from '../../services/auth';
 
 export default function ChangePasswordScreen({ language = 'de', onBack, onSaved }) {
   const t = makeT(language);
@@ -19,14 +20,19 @@ export default function ChangePasswordScreen({ language = 'de', onBack, onSaved 
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
 
-  const submit = () => {
+  const submit = async () => {
     setError(null);
-    if (current.length < 6 || next.length < 6 || next !== confirm) {
+    if (next.length < 6 || next !== confirm) {
       setError(t(S.cpErr));
       return;
     }
-    setDone(true);
-    setTimeout(() => onSaved?.(), 900);
+    try {
+      await changePassword(next);
+      setDone(true);
+      setTimeout(() => onSaved?.(), 1000);
+    } catch (e) {
+      setError(e.message || t(S.cpErr));
+    }
   };
 
   return (
@@ -34,7 +40,7 @@ export default function ChangePasswordScreen({ language = 'de', onBack, onSaved 
       <LinearGradient colors={['#1E0A2E', '#3A1559']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScreenHeader title={pick(S.changePassword, language)} onBack={onBack} />
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={0}>
           <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
             {done ? (
               <View style={styles.doneBox}>

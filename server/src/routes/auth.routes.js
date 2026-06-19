@@ -6,13 +6,20 @@ const { requireAuth } = require('../middleware/auth');
 const { unwrap } = require('../utils/handle');
 
 // POST /api/auth/signup  { email, password, name }
+// Uses the admin API with email_confirm:true so NO confirmation email is sent
+// (avoids the email rate limit) and the user can sign in immediately.
 router.post('/signup', asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'email and password required' });
   const data = unwrap(
-    await anon.auth.signUp({ email, password, options: { data: { name: name || '' } } })
+    await admin.auth.admin.createUser({
+      email: email.trim(),
+      password,
+      email_confirm: true,
+      user_metadata: { name: name || '' },
+    })
   );
-  res.status(201).json({ user: data.user, session: data.session });
+  res.status(201).json({ user: data.user });
 }));
 
 // POST /api/auth/login  { email, password }

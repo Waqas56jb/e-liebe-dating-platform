@@ -9,11 +9,10 @@ import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
 import ProfileSetupScreen from '../screens/profile/ProfileSetupScreen';
 import MainShell from '../screens/main/MainShell';
 import { DEFAULT_LANGUAGE } from '../constants/languages';
-import { registerAccount } from '../services/authStore';
+import { getSession, signOut } from '../services/auth';
+import { getMyProfile, completeProfileSetup } from '../services/api';
 import { colors } from '../theme';
 
-// Top-level flow router. Once the user reaches HOME, MainShell owns the
-// 4-tab experience (Discover · Matches · Chat · Profile) and all sub-screens.
 const ROUTES = {
   SPLASH: 'splash',
   LANGUAGE: 'language',
@@ -28,30 +27,40 @@ const ROUTES = {
 export default function RootNavigator() {
   const [route, setRoute] = useState(ROUTES.SPLASH);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
-  const [profile, setProfile] = useState(null);
-  const [pendingCreds, setPendingCreds] = useState(null);
   const [sessionEmail, setSessionEmail] = useState('');
   const go = (r) => setRoute(r);
 
-  const logout = () => {
-    setProfile(null);
-    setPendingCreds(null);
+  // After login/signup, send the user to setup (if incomplete) or home.
+  const resolveAfterAuth = async () => {
+    try {
+      const session = await getSession();
+      setSessionEmail(session?.user?.email || '');
+      const profile = await getMyProfile();
+      go(profile?.raw?.is_complete ? ROUTES.HOME : ROUTES.PROFILE_SETUP);
+    } catch {
+      go(ROUTES.PROFILE_SETUP);
+    }
+  };
+
+  const onSplashDone = async () => {
+    const session = await getSession();
+    if (session) await resolveAfterAuth();
+    else go(ROUTES.LANGUAGE);
+  };
+
+  const logout = async () => {
+    await signOut();
     setSessionEmail('');
-    go(ROUTES.LOGIN);
+    go(ROUTES.WELCOME);
   };
 
   return (
     <View style={styles.root}>
-      {route === ROUTES.SPLASH && (
-        <SplashScreen language={language} onDone={() => go(ROUTES.LANGUAGE)} />
-      )}
+      {route === ROUTES.SPLASH && <SplashScreen language={language} onDone={onSplashDone} />}
 
       {route === ROUTES.LANGUAGE && (
         <LanguageSelectionScreen
-          onContinue={(code) => {
-            setLanguage(code);
-            go(ROUTES.WELCOME);
-          }}
+          onContinue={(code) => { setLanguage(code); go(ROUTES.WELCOME); }}
         />
       )}
 
@@ -69,10 +78,7 @@ export default function RootNavigator() {
           language={language}
           onBack={() => go(ROUTES.WELCOME)}
           onLogin={() => go(ROUTES.LOGIN)}
-          onContinue={(creds) => {
-            setPendingCreds(creds);
-            go(ROUTES.PROFILE_SETUP);
-          }}
+          onSignedUp={() => go(ROUTES.PROFILE_SETUP)}
         />
       )}
 
@@ -81,11 +87,7 @@ export default function RootNavigator() {
           language={language}
           onBack={() => go(ROUTES.WELCOME)}
           onRegister={() => go(ROUTES.EMAIL_SIGNUP)}
-          onSignIn={(account) => {
-            setSessionEmail(account?.email || '');
-            setProfile(account?.profile || null);
-            go(ROUTES.HOME);
-          }}
+          onSignedIn={resolveAfterAuth}
           onForgot={() => go(ROUTES.RESET)}
         />
       )}
@@ -97,14 +99,9 @@ export default function RootNavigator() {
       {route === ROUTES.PROFILE_SETUP && (
         <ProfileSetupScreen
           language={language}
-          onExit={() => go(pendingCreds ? ROUTES.EMAIL_SIGNUP : ROUTES.WELCOME)}
+          onExit={logout}
           onComplete={async (data) => {
-            setProfile(data);
-            if (pendingCreds) {
-              await registerAccount({ ...pendingCreds, profile: data });
-              setSessionEmail(pendingCreds.email);
-              setPendingCreds(null);
-            }
+            await completeProfileSetup(data);
             go(ROUTES.HOME);
           }}
         />
@@ -113,8 +110,7 @@ export default function RootNavigator() {
       {route === ROUTES.HOME && (
         <MainShell
           language={language}
-          email={sessionEmail || 'name@email.com'}
-          profile={profile}
+          email={sessionEmail}
           onChangeLanguage={setLanguage}
           onLogout={logout}
         />

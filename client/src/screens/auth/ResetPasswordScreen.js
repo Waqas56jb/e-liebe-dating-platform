@@ -20,6 +20,7 @@ import Logo from '../../components/common/Logo';
 import { RESET_STRINGS as S } from '../../constants/profileSetup';
 import { makeT } from '../../utils/i18n';
 import { useResponsive } from '../../hooks/useResponsive';
+import { resetPassword } from '../../services/auth';
 import { colors, gradients, spacing, typography, radius } from '../../theme';
 
 const BG_IMAGE =
@@ -47,7 +48,7 @@ export default function ResetPasswordScreen({ language = 'de', onBack, onDone })
       </ImageBackground>
 
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={0}>
           <View style={styles.topBar}>
             <Pressable hitSlop={12} onPress={onBack} style={styles.iconBtn}>
               <Ionicons name="chevron-back" size={22} color={colors.white} />
@@ -78,7 +79,11 @@ export default function ResetPasswordScreen({ language = 'de', onBack, onDone })
                 label={t(S.send)}
                 icon="paper-plane-outline"
                 variant="primary"
-                onPress={() => isEmail(email) && setSent(true)}
+                onPress={async () => {
+                  if (!isEmail(email)) return;
+                  try { await resetPassword(email); } catch (e) { /* show success regardless for privacy */ }
+                  setSent(true);
+                }}
                 style={[{ width: '100%', marginTop: spacing.sm }, !isEmail(email) && styles.disabled]}
               />
 

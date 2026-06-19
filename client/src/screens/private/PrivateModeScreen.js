@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,6 +12,7 @@ import AuthButton from '../../components/common/AuthButton';
 import { makeT, pick } from '../../utils/i18n';
 import { colors, gradients, spacing, typography, radius } from '../../theme';
 import { PRIVATE_STRINGS as PV } from '../../constants/account';
+import { getMyProfile, setPrivateMode } from '../../services/api';
 
 const STATUS_OPTIONS = [
   { key: 'single', label: PV.statusOptions.single },
@@ -26,6 +27,23 @@ export default function PrivateModeScreen({ language = 'de', onBack }) {
   const [hide, setHide] = useState(false);
   const [pause, setPause] = useState(false);
   const [status, setStatus] = useState('single');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const p = await getMyProfile();
+        const r = p?.raw || {};
+        setActive(!!r.private_mode); setHide(!!r.hide_discovery);
+        setPause(!!r.pause_matching); setStatus(r.rel_status || 'single');
+      } catch (e) {}
+    })();
+  }, []);
+
+  const persist = (patch) => { setPrivateMode(patch).catch(() => {}); };
+  const toggleActive = () => { setActive((v) => { persist({ private_mode: !v }); return !v; }); };
+  const toggleHide = () => { setHide((v) => { persist({ hide_discovery: !v }); return !v; }); };
+  const togglePause = () => { setPause((v) => { persist({ pause_matching: !v }); return !v; }); };
+  const chooseStatus = (s) => { setStatus(s); persist({ rel_status: s }); };
 
   return (
     <View style={styles.root}>
@@ -49,38 +67,16 @@ export default function PrivateModeScreen({ language = 'de', onBack }) {
           {/* Controls */}
           <View style={{ marginTop: spacing.xl }}>
             <Card>
-              <ToggleRow
-                icon="lock-closed"
-                tint="#9B5DE5"
-                label={pick(PV.activate, language)}
-                sub={pick(PV.activateSub, language)}
-                value={active}
-                onToggle={() => setActive((v) => !v)}
-              />
-              <ToggleRow
-                icon="eye-off"
-                tint="#3FA7FF"
-                label={pick(PV.hide, language)}
-                sub={pick(PV.hideSub, language)}
-                value={hide}
-                onToggle={() => setHide((v) => !v)}
-              />
-              <ToggleRow
-                icon="pause-circle"
-                tint="#D4AF37"
-                label={pick(PV.pause, language)}
-                sub={pick(PV.pauseSub, language)}
-                value={pause}
-                onToggle={() => setPause((v) => !v)}
-                last
-              />
+              <ToggleRow icon="lock-closed" tint="#9B5DE5" label={pick(PV.activate, language)} sub={pick(PV.activateSub, language)} value={active} onToggle={toggleActive} />
+              <ToggleRow icon="eye-off" tint="#3FA7FF" label={pick(PV.hide, language)} sub={pick(PV.hideSub, language)} value={hide} onToggle={toggleHide} />
+              <ToggleRow icon="pause-circle" tint="#D4AF37" label={pick(PV.pause, language)} sub={pick(PV.pauseSub, language)} value={pause} onToggle={togglePause} last />
             </Card>
           </View>
 
           {/* Relationship status */}
           <View style={{ marginTop: spacing.xl }}>
             <SectionLabel>{pick(PV.status, language)}</SectionLabel>
-            <SelectChips options={STATUS_OPTIONS} value={status} onChange={setStatus} language={language} />
+            <SelectChips options={STATUS_OPTIONS} value={status} onChange={chooseStatus} language={language} />
           </View>
 
           {/* Shared couple space */}

@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -61,6 +62,7 @@ export default function ProfileSetupScreen({ language = 'de', onComplete, onExit
   const { scale } = useResponsive();
   const [step, setStep] = useState(0);
   const [data, setData] = useState(initialData);
+  const [saving, setSaving] = useState(false);
 
   const fade = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(20)).current;
@@ -112,9 +114,24 @@ export default function ProfileSetupScreen({ language = 'de', onComplete, onExit
 
   const optional = stepKey === 'lifestyle' || stepKey === 'bio';
 
+  const finish = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await onComplete?.(data);
+    } catch (e) {
+      Alert.alert(
+        language === 'de' ? 'Profil konnte nicht erstellt werden' : 'Could not create profile',
+        e?.message || (language === 'de' ? 'Bitte versuche es erneut.' : 'Please try again.')
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const goNext = () => {
     if (isLast) {
-      onComplete?.(data);
+      finish();
       return;
     }
     setStep((s) => Math.min(s + 1, total - 1));
@@ -153,7 +170,7 @@ export default function ProfileSetupScreen({ language = 'de', onComplete, onExit
           <StepProgress step={step} total={total} />
         </View>
 
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={0}>
           <ScrollView
             ref={scrollRef}
             contentContainerStyle={styles.scroll}
@@ -169,11 +186,11 @@ export default function ProfileSetupScreen({ language = 'de', onComplete, onExit
         {/* Footer */}
         <View style={styles.footer}>
           <AuthButton
-            label={isLast ? t(S.finish) : t(S.next)}
+            label={saving ? (language === 'de' ? 'Wird erstellt…' : 'Creating…') : (isLast ? t(S.finish) : t(S.next))}
             icon={isLast ? 'heart' : 'arrow-forward'}
             variant="primary"
             onPress={goNext}
-            style={[{ width: '100%' }, !isStepValid() && styles.disabled]}
+            style={[{ width: '100%' }, (!isStepValid() || saving) && styles.disabled]}
           />
         </View>
       </SafeAreaView>
