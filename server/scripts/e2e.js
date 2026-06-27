@@ -7,7 +7,7 @@ require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 const { admin } = require('../src/config/supabase');
 
-const API_BASE = process.env.API_BASE || 'https://e-liebe-dating-platform-backend.vercel.app';
+const API_BASE = process.env.API_BASE || 'https://e-liebe-dating-backend.vercel.app';
 const URL = process.env.SUPABASE_URL;
 const ANON = process.env.SUPABASE_ANON_KEY;
 const PW = 'E2ePass123!';
