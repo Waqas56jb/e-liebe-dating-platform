@@ -21,7 +21,18 @@ export default function ProfileCard({ profile, language, myInterests = [], onInf
 
   return (
     <View style={styles.card}>
-      <Image source={{ uri: profile.photos[0] }} style={styles.photo} />
+      {profile.photoReal ? (
+        <Image source={{ uri: profile.photos[0] }} style={styles.photo} />
+      ) : (
+        <LinearGradient colors={['#5B2A86', '#2E1247']} style={styles.photo}>
+          <View style={styles.placeholder}>
+            <Text style={styles.placeholderInitial}>
+              {(profile.name || '?').trim().charAt(0).toUpperCase()}
+            </Text>
+            <Ionicons name="image-outline" size={26} color="rgba(255,255,255,0.5)" style={{ marginTop: 10 }} />
+          </View>
+        </LinearGradient>
+      )}
       <LinearGradient
         colors={['rgba(0,0,0,0.30)', 'transparent', 'rgba(10,4,8,0.55)', 'rgba(10,4,8,0.95)']}
         locations={[0, 0.35, 0.72, 1]}
@@ -99,6 +110,8 @@ const styles = StyleSheet.create({
     ...shadow.soft,
   },
   photo: { width: '100%', height: '100%' },
+  placeholder: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  placeholderInitial: { color: 'rgba(255,255,255,0.85)', fontSize: 96, fontWeight: '800' },
   topRow: { position: 'absolute', top: 12, left: 14, right: 14 },
   dots: { flexDirection: 'row' },
   dot: { flex: 1, height: 3, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.35)', marginHorizontal: 2 },

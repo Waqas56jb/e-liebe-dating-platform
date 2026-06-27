@@ -65,6 +65,7 @@ export function mapProfile(row) {
     gender: row.gender,
     interests,
     photos: photos.length ? photos : [FALLBACK_PHOTO],
+    photoReal: photos.length > 0, // false → no uploaded photo (show placeholder)
     raw: row,
   };
 }
@@ -243,38 +244,48 @@ export async function getDiscoverFeed(limit = 30) {
     supabase.from('blocks').select('blocked_id').eq('blocker_id', me),
     supabase.from('blocks').select('blocker_id').eq('blocked_id', me),
   ]);
-  const exclude = new Set([me]);
-  (swiped || []).forEach((s) => exclude.add(s.swipee_id));
-  (iBlocked || []).forEach((b) => exclude.add(b.blocked_id));
-  (blockedMe || []).forEach((b) => exclude.add(b.blocker_id));
+  const swipedSet = new Set((swiped || []).map((s) => s.swipee_id));
+  const blocked = new Set();
+  (iBlocked || []).forEach((b) => blocked.add(b.blocked_id));
+  (blockedMe || []).forEach((b) => blocked.add(b.blocker_id));
 
-  let q = supabase.from('profiles').select(PROFILE_SELECT)
-    .eq('is_complete', true).eq('hide_discovery', false).eq('pause_matching', false);
-
-  // Gender filter only when the user narrowed it (keeps the feed populated).
-  if (pref?.show_me === 'women') q = q.eq('gender', 'female');
-  else if (pref?.show_me === 'men') q = q.eq('gender', 'male');
-
-  const ex = [...exclude];
-  if (ex.length) q = q.not('id', 'in', `(${ex.join(',')})`);
-  q = q.order('last_active_at', { ascending: false }).limit(limit);
-
-  const { data, error } = await q;
+  // Fetch all discoverable profiles (we apply the "already swiped" rule in JS
+  // so we can loop instead of ever showing an empty deck).
+  const { data, error } = await supabase.from('profiles').select(PROFILE_SELECT)
+    .eq('is_complete', true).eq('hide_discovery', false).eq('pause_matching', false)
+    .neq('id', me)
+    .order('last_active_at', { ascending: false })
+    .limit(200);
   if (error) throw error;
-  let list = (data || []).map(mapProfile);
 
-  // Age filter applied in JS so profiles without a birth date still appear.
+  let all = (data || []).map(mapProfile).filter((p) => !blocked.has(p.id));
+
+  // Only show usable profiles — must have a name. Hides half-finished/blank
+  // accounts so the deck never shows an "empty" card.
+  all = all.filter((p) => p.name && p.name.trim());
+
+  // Gender filter in JS (keep profiles whose gender isn't set yet so real
+  // users still appear).
+  if (pref?.show_me === 'women') all = all.filter((p) => p.gender === 'female' || p.gender == null);
+  else if (pref?.show_me === 'men') all = all.filter((p) => p.gender === 'male' || p.gender == null);
+
+  // Age filter (keep profiles without a birth date).
   const lo = pref?.age_min ?? 18;
   const hi = pref?.age_max ?? 99;
-  list = list.filter((p) => p.age == null || (p.age >= lo && p.age <= hi));
+  all = all.filter((p) => p.age == null || (p.age >= lo && p.age <= hi));
 
   if (pref?.interest_ids?.length) {
     const want = new Set(pref.interest_ids);
-    const all = await loadInterests();
-    const idBySlug = Object.fromEntries(all.map((i) => [i.slug, i.id]));
-    list = list.filter((p) => p.interests.some((s) => want.has(idBySlug[s])));
+    const lookup = await loadInterests();
+    const idBySlug = Object.fromEntries(lookup.map((i) => [i.slug, i.id]));
+    all = all.filter((p) => p.interests.some((s) => want.has(idBySlug[s])));
   }
-  return list;
+
+  // Prefer profiles you haven't swiped yet. But if you've already swiped
+  // everyone (small user base), loop through them again rather than showing
+  // the empty "that's everyone" screen.
+  const fresh = all.filter((p) => !swipedSet.has(p.id));
+  return (fresh.length ? fresh : all).slice(0, limit);
 }
 
 // ============================ SWIPES / MATCHES ============================
