@@ -6,11 +6,11 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 
 import SwipeDeck from '../../components/discovery/SwipeDeck';
-import FeatureStrip from '../../components/discovery/FeatureStrip';
+import ActionBar from '../../components/discovery/ActionBar';
 import { pick } from '../../utils/i18n';
 import { colors, spacing, typography } from '../../theme';
 import { HOME_STRINGS as H } from '../../constants/home';
-import { getDiscoverFeed, swipe as apiSwipe } from '../../services/api';
+import { getDiscoverFeed, getMyProfile, swipe as apiSwipe, undoSwipe } from '../../services/api';
 
 const SEGMENTS = [
   { key: 'forYou', label: H.forYou },
@@ -27,6 +27,7 @@ export default function HomeScreen({
 }) {
   const deckRef = useRef(null);
   const [profiles, setProfiles] = useState([]);
+  const [myInterests, setMyInterests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [topCard, setTopCard] = useState(null);
   const [segment, setSegment] = useState('forYou');
@@ -35,8 +36,12 @@ export default function HomeScreen({
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getDiscoverFeed();
+      const [data, me] = await Promise.all([
+        getDiscoverFeed(),
+        getMyProfile().catch(() => null),
+      ]);
       setProfiles(data);
+      setMyInterests(me?.interests || []);
       setTopCard(data[0] || null);
     } catch (e) {
       setProfiles([]);
@@ -105,10 +110,12 @@ export default function HomeScreen({
               ref={deckRef}
               data={profiles}
               language={language}
+              myInterests={myInterests}
               onCardChange={onCardChange}
               onSwipeRight={(c) => doSwipe(c, 'like')}
               onSwipeUp={(c) => doSwipe(c, 'superlike')}
               onSwipeLeft={(c) => doSwipe(c, 'pass')}
+              onRewind={(c) => { undoSwipe(c.id).catch(() => {}); }}
               onViewProfile={onViewProfile}
             />
           )}
@@ -116,15 +123,11 @@ export default function HomeScreen({
 
         {!loading && profiles.length > 0 ? (
           <View style={styles.actions}>
-            <FeatureStrip
-              language={language}
-              onPress={(i) => {
-                const deck = deckRef.current;
-                if (!deck) return;
-                if (i === 1) deck.swipeLeft();
-                else if (i === 2) deck.swipeRight();
-                else if (i === 3) deck.swipeUp();
-              }}
+            <ActionBar
+              onRewind={() => deckRef.current?.rewind()}
+              onPass={() => deckRef.current?.swipeLeft()}
+              onLike={() => deckRef.current?.swipeRight()}
+              onSuperLike={() => deckRef.current?.swipeUp()}
             />
           </View>
         ) : !loading ? (

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, Pressable, Animated, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,11 +9,16 @@ import { makeT } from '../../utils/i18n';
 import { useResponsive } from '../../hooks/useResponsive';
 import { colors, gradients, spacing, typography } from '../../theme';
 import { MATCH_SUCCESS_STRINGS as S } from '../../constants/account';
-import { currentUserPhoto } from '../../constants/me';
+import { getMyPhoto } from '../../services/api';
 
 export default function MatchSuccessScreen({ language = 'de', profile, onSendMessage, onContinue }) {
   const t = makeT(language);
   const { scale } = useResponsive();
+  const [myPhoto, setMyPhoto] = useState(null);
+
+  useEffect(() => {
+    getMyPhoto().then(setMyPhoto).catch(() => {});
+  }, []);
 
   const leftAnim = useRef(new Animated.Value(-120)).current;
   const rightAnim = useRef(new Animated.Value(120)).current;
@@ -53,7 +58,7 @@ export default function MatchSuccessScreen({ language = 'de', profile, onSendMes
 
           <View style={styles.avatars}>
             <Animated.Image
-              source={{ uri: currentUserPhoto }}
+              source={{ uri: myPhoto || profile.photos[0] }}
               style={[styles.avatar, styles.left, { transform: [{ translateX: leftAnim }, { rotate: '-7deg' }] }]}
             />
             <Animated.Image

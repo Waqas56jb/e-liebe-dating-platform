@@ -16,7 +16,7 @@ export const HOME_STRINGS = {
   sendMessage: { de: 'Nachricht senden', en: 'Send a message' },
   keepSwiping: { de: 'Weiter swipen', en: 'Keep swiping' },
   km: { de: 'km', en: 'km' },
-  online: { de: 'Online', en: 'Online' },
+  inCommon: { de: 'gemeinsam', en: 'in common' },
   forYou: { de: 'Für dich', en: 'For you' },
   nearby: { de: 'In der Nähe', en: 'Nearby' },
 };

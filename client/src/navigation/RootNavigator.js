@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import SplashScreen from '../screens/SplashScreen';
+import OnboardingScreen from '../screens/onboarding/OnboardingScreen';
 import LanguageSelectionScreen from '../screens/onboarding/LanguageSelectionScreen';
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
 import EmailSignupScreen from '../screens/auth/EmailSignupScreen';
@@ -14,7 +14,8 @@ import { getMyProfile, completeProfileSetup } from '../services/api';
 import { colors } from '../theme';
 
 const ROUTES = {
-  SPLASH: 'splash',
+  BOOT: 'boot',
+  ONBOARDING: 'onboarding',
   LANGUAGE: 'language',
   WELCOME: 'welcome',
   EMAIL_SIGNUP: 'emailSignup',
@@ -25,7 +26,7 @@ const ROUTES = {
 };
 
 export default function RootNavigator() {
-  const [route, setRoute] = useState(ROUTES.SPLASH);
+  const [route, setRoute] = useState(ROUTES.BOOT);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
   const [sessionEmail, setSessionEmail] = useState('');
   const go = (r) => setRoute(r);
@@ -42,11 +43,19 @@ export default function RootNavigator() {
     }
   };
 
-  const onSplashDone = async () => {
-    const session = await getSession();
-    if (session) await resolveAfterAuth();
-    else go(ROUTES.LANGUAGE);
-  };
+  // On launch: skip straight to the app if already signed in, else show onboarding.
+  // (The native splash image from app.json covers this brief check.)
+  useEffect(() => {
+    (async () => {
+      try {
+        const session = await getSession();
+        if (session) await resolveAfterAuth();
+        else go(ROUTES.ONBOARDING);
+      } catch {
+        go(ROUTES.ONBOARDING);
+      }
+    })();
+  }, []);
 
   const logout = async () => {
     await signOut();
@@ -56,7 +65,9 @@ export default function RootNavigator() {
 
   return (
     <View style={styles.root}>
-      {route === ROUTES.SPLASH && <SplashScreen language={language} onDone={onSplashDone} />}
+      {route === ROUTES.ONBOARDING && (
+        <OnboardingScreen language={language} onDone={() => go(ROUTES.LANGUAGE)} />
+      )}
 
       {route === ROUTES.LANGUAGE && (
         <LanguageSelectionScreen

@@ -1,8 +1,8 @@
-// Deterministic, stable "compatibility" score per profile (mock).
-// Same id always yields the same value in the 78–98 range — no Math.random
-// so it doesn't flicker on re-render.
-export function matchScore(id = '') {
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 1000;
-  return 78 + (h % 21); // 78..98
+// Real compatibility signal: how many interests two people actually share.
+// No fabricated scores — derived purely from the signed-in user's interests
+// and the candidate's interests (both come from Supabase).
+export function sharedInterests(mine = [], theirs = []) {
+  if (!mine.length || !theirs.length) return 0;
+  const set = new Set(mine);
+  return theirs.filter((slug) => set.has(slug)).length;
 }

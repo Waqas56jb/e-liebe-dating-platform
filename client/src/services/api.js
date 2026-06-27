@@ -9,9 +9,14 @@ const FALLBACK_PHOTO =
   'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=600&q=80';
 
 // ---------- helpers ----------
+// Resolve the signed-in user id. getUser() can briefly return null right after
+// a cold start; fall back to the persisted session so we never run queries
+// (e.g. the discovery self-exclude) without a valid id.
 export async function uid() {
   const { data } = await supabase.auth.getUser();
-  return data?.user?.id || null;
+  if (data?.user?.id) return data.user.id;
+  const { data: s } = await supabase.auth.getSession();
+  return s?.session?.user?.id || null;
 }
 
 function ageFromDob(dob) {
@@ -103,6 +108,16 @@ export async function updateMyProfile(patch) {
   const id = await uid();
   const { error } = await supabase.from('profiles').update(patch).eq('id', id);
   if (error) throw error;
+}
+
+// Signed-in user's primary photo (for the match celebration screens).
+export async function getMyPhoto() {
+  try {
+    const me = await getMyProfile();
+    return me?.photos?.[0] || FALLBACK_PHOTO;
+  } catch {
+    return FALLBACK_PHOTO;
+  }
 }
 
 // Save the 7-step wizard (uploads photos, writes profile, interests)
@@ -218,6 +233,9 @@ const yearsAgo = (n) => { const d = new Date(); d.setFullYear(d.getFullYear() - 
 
 export async function getDiscoverFeed(limit = 30) {
   const me = await uid();
+  // Never run the feed without a valid user — otherwise the self-exclude is
+  // empty and the user's own profile would appear in the deck.
+  if (!me) return [];
   const pref = await getPreferences();
 
   const [{ data: swiped }, { data: iBlocked }, { data: blockedMe }] = await Promise.all([
@@ -233,12 +251,9 @@ export async function getDiscoverFeed(limit = 30) {
   let q = supabase.from('profiles').select(PROFILE_SELECT)
     .eq('is_complete', true).eq('hide_discovery', false).eq('pause_matching', false);
 
-  if (pref?.age_max) q = q.gte('date_of_birth', yearsAgo(pref.age_max + 1));
-  if (pref?.age_min) q = q.lte('date_of_birth', yearsAgo(pref.age_min));
+  // Gender filter only when the user narrowed it (keeps the feed populated).
   if (pref?.show_me === 'women') q = q.eq('gender', 'female');
   else if (pref?.show_me === 'men') q = q.eq('gender', 'male');
-  if (pref?.goal) q = q.eq('relationship_goal', pref.goal);
-  if (pref?.religions?.length) q = q.in('religion', pref.religions);
 
   const ex = [...exclude];
   if (ex.length) q = q.not('id', 'in', `(${ex.join(',')})`);
@@ -247,6 +262,12 @@ export async function getDiscoverFeed(limit = 30) {
   const { data, error } = await q;
   if (error) throw error;
   let list = (data || []).map(mapProfile);
+
+  // Age filter applied in JS so profiles without a birth date still appear.
+  const lo = pref?.age_min ?? 18;
+  const hi = pref?.age_max ?? 99;
+  list = list.filter((p) => p.age == null || (p.age >= lo && p.age <= hi));
+
   if (pref?.interest_ids?.length) {
     const want = new Set(pref.interest_ids);
     const all = await loadInterests();
@@ -269,6 +290,15 @@ export async function swipe(swipeeId, action) {
   const { data: match } = await supabase.from('matches').select('*')
     .eq('user_a', low(me, swipeeId)).eq('user_b', high(me, swipeeId)).maybeSingle();
   return { matched: !!match, match };
+}
+
+// Undo the last swipe on a profile (Rewind button) — removes the swipe row so
+// the card can reappear in the deck.
+export async function undoSwipe(swipeeId) {
+  const me = await uid();
+  const { error } = await supabase.from('swipes')
+    .delete().eq('swiper_id', me).eq('swipee_id', swipeeId);
+  if (error) throw error;
 }
 
 export async function getMatches() {

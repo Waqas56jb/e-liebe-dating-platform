@@ -16,7 +16,7 @@ const APP_VERSION = '1.0.0 (MVP)';
 
 export default function SettingsScreen({
   language = 'de',
-  email = 'name@email.com',
+  email = '',
   onBack,
   onNotifications,
   onPrivacy,
@@ -37,8 +37,7 @@ export default function SettingsScreen({
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <SectionLabel>{pick(S.account, language)}</SectionLabel>
           <Card>
-            <MenuRow icon="mail" label={pick(S.email, language)} value={email} mode="nav" />
-            <MenuRow icon="call" tint="#3FA7FF" label={pick(S.phone, language)} value="+49 ··· ··" mode="nav" last />
+            <MenuRow icon="mail" label={pick(S.email, language)} value={email} mode="nav" last />
           </Card>
 
           <View style={{ height: spacing.lg }} />

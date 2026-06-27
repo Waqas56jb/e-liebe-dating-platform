@@ -6,9 +6,8 @@ import AuthButton from '../common/AuthButton';
 import { colors, gradients, spacing, typography, radius } from '../../theme';
 import { pick } from '../../utils/i18n';
 import { HOME_STRINGS as H } from '../../constants/home';
-import { currentUserPhoto } from '../../constants/me';
 
-export default function MatchModal({ visible, profile, language, onClose, onMessage }) {
+export default function MatchModal({ visible, profile, myPhoto, language, onClose, onMessage }) {
   if (!profile) return null;
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -22,7 +21,7 @@ export default function MatchModal({ visible, profile, language, onClose, onMess
           <Text style={styles.sub}>{pick(H.matchSub, language)}</Text>
 
           <View style={styles.avatars}>
-            <Image source={{ uri: currentUserPhoto }} style={[styles.avatar, styles.avatarLeft]} />
+            <Image source={{ uri: myPhoto || profile.photos[0] }} style={[styles.avatar, styles.avatarLeft]} />
             <View style={styles.heartBubble}>
               <Ionicons name="heart" size={26} color={colors.white} />
             </View>

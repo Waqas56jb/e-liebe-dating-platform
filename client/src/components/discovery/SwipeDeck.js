@@ -20,11 +20,12 @@ function Stamp({ label, color, style }) {
 
 // Imperative API: ref.swipeLeft() / swipeRight() / swipeUp()
 const SwipeDeck = forwardRef(function SwipeDeck(
-  { data, language, onSwipeLeft, onSwipeRight, onSwipeUp, onViewProfile, onCycle, onCardChange },
+  { data, language, myInterests = [], onSwipeLeft, onSwipeRight, onSwipeUp, onRewind, onViewProfile, onCycle, onCardChange },
   ref
 ) {
   const [index, setIndex] = useState(0);
   const position = useRef(new Animated.ValueXY()).current;
+  const lastSwiped = useRef(null); // { card, index } — for Rewind
 
   // Report the current top card so the parent can render an ambient backdrop.
   useEffect(() => {
@@ -77,16 +78,28 @@ const SwipeDeck = forwardRef(function SwipeDeck(
         if (direction === 'right') onSwipeRight?.(card);
         else if (direction === 'left') onSwipeLeft?.(card);
         else onSwipeUp?.(card);
+        lastSwiped.current = { card, index };
         advance();
       });
     },
     [data, index, position, onSwipeRight, onSwipeLeft, onSwipeUp, advance]
   );
 
+  // Bring back the last swiped profile and undo its swipe in the DB.
+  const rewind = useCallback(() => {
+    const last = lastSwiped.current;
+    if (!last) return;
+    lastSwiped.current = null;
+    position.setValue({ x: 0, y: 0 });
+    setIndex(last.index);
+    onRewind?.(last.card);
+  }, [position, onRewind]);
+
   useImperativeHandle(ref, () => ({
     swipeLeft: () => forceSwipe('left'),
     swipeRight: () => forceSwipe('right'),
     swipeUp: () => forceSwipe('up'),
+    rewind,
   }));
 
   const reset = useCallback(() => {
@@ -158,14 +171,14 @@ const SwipeDeck = forwardRef(function SwipeDeck(
                 <Stamp label="LIKE" color={colors.success} style={[styles.like, { opacity: likeOpacity }]} />
                 <Stamp label="NOPE" color={colors.danger} style={[styles.nope, { opacity: nopeOpacity }]} />
                 <Stamp label="SUPER" color={colors.star} style={[styles.super, { opacity: superOpacity }]} />
-                <ProfileCard profile={item} language={language} onInfo={() => onViewProfile?.(item)} />
+                <ProfileCard profile={item} language={language} myInterests={myInterests} onInfo={() => onViewProfile?.(item)} />
               </Animated.View>
             );
           }
 
           return (
             <Animated.View key={item.id} style={[styles.cardWrap, { transform: [{ scale: nextScale }] }]}>
-              <ProfileCard profile={item} language={language} onInfo={() => onViewProfile?.(item)} />
+              <ProfileCard profile={item} language={language} myInterests={myInterests} onInfo={() => onViewProfile?.(item)} />
             </Animated.View>
           );
         })

@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { colors, radius, shadow, spacing, typography } from '../../theme';
 import { pick } from '../../utils/i18n';
-import { matchScore } from '../../utils/score';
+import { sharedInterests } from '../../utils/score';
 import { INTEREST_OPTIONS } from '../../constants/profileSetup';
 import { HOME_STRINGS as H } from '../../constants/home';
 
@@ -15,9 +15,9 @@ const interestLabel = (key, language) => {
 };
 
 // Premium discovery card: photo, ambient gradient, frosted info chips,
-// compatibility score and a clean typographic hierarchy.
-export default function ProfileCard({ profile, language, onInfo }) {
-  const score = matchScore(profile.id);
+// real "interests in common" signal and a clean typographic hierarchy.
+export default function ProfileCard({ profile, language, myInterests = [], onInfo }) {
+  const shared = sharedInterests(myInterests, profile.interests);
 
   return (
     <View style={styles.card}>
@@ -37,16 +37,16 @@ export default function ProfileCard({ profile, language, onInfo }) {
         </View>
       </View>
 
-      <View style={styles.topBadges}>
-        <BlurView intensity={30} tint="dark" style={styles.scorePill}>
-          <Ionicons name="sparkles" size={13} color={colors.gold} />
-          <Text style={styles.scoreText}>{score}% Match</Text>
-        </BlurView>
-        <BlurView intensity={30} tint="dark" style={styles.onlinePill}>
-          <View style={styles.onlineDot} />
-          <Text style={styles.onlineText}>{pick(H.online ?? { de: 'Online', en: 'Online' }, language)}</Text>
-        </BlurView>
-      </View>
+      {shared > 0 && (
+        <View style={styles.topBadges}>
+          <BlurView intensity={30} tint="dark" style={styles.scorePill}>
+            <Ionicons name="sparkles" size={13} color={colors.gold} />
+            <Text style={styles.scoreText}>
+              {shared} {pick(H.inCommon, language)}
+            </Text>
+          </BlurView>
+        </View>
+      )}
 
       {/* bottom info */}
       <View style={styles.info}>

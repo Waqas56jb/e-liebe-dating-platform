@@ -223,8 +223,10 @@ create index idx_matches_user_a on matches(user_a, last_message_at desc);
 create index idx_matches_user_b on matches(user_b, last_message_at desc);
 
 -- Auto-create a match when two users like each other.
+-- SECURITY DEFINER so the reciprocal-like lookup bypasses RLS (otherwise the
+-- other person's swipe is invisible and no match is ever created).
 create or replace function handle_mutual_like()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql security definer set search_path = public as $$
 declare reciprocal boolean;
 begin
   if new.action in ('like','superlike') then
@@ -481,6 +483,9 @@ create policy "notifs own"    on notifications    for all using (auth.uid() = us
 
 -- Swipes: you create & read your own.
 create policy "swipes own" on swipes for all using (auth.uid() = swiper_id) with check (auth.uid() = swiper_id);
+-- ...and you can see incoming likes/super-likes ("Likes you").
+create policy "swipes incoming" on swipes for select
+  using (auth.uid() = swipee_id and action in ('like','superlike'));
 
 -- Matches: visible to the two participants.
 create policy "matches read" on matches for select using (auth.uid() = user_a or auth.uid() = user_b);
@@ -507,6 +512,18 @@ create policy "views read"   on profile_views for select using (auth.uid() = vie
 create policy "couple own" on couple_links for all
   using (auth.uid() = user_id or auth.uid() = partner_id)
   with check (auth.uid() = user_id);
+
+-- Storage: public 'photos' bucket; each user manages files in their own folder.
+insert into storage.buckets (id, name, public) values ('photos', 'photos', true)
+  on conflict (id) do update set public = true;
+create policy "photos public read" on storage.objects for select
+  using (bucket_id = 'photos');
+create policy "photos upload own" on storage.objects for insert to authenticated
+  with check (bucket_id = 'photos' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "photos update own" on storage.objects for update to authenticated
+  using (bucket_id = 'photos' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "photos delete own" on storage.objects for delete to authenticated
+  using (bucket_id = 'photos' and (storage.foldername(name))[1] = auth.uid()::text);
 
 -- ============================================================================
 -- 20. SEED — lookup data (mirrors the app's constants)
